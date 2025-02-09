@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".listBillView">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appLayoutMakeBill"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="8dp"
+            android:background="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/topAppBar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:elevation="16dp"
+                app:menu="@menu/menu7"
+                app:title="Invoice Detail"
+                app:titleTextAppearance="@style/TextView" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/latobold"
+            android:text="CustomerName"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appLayoutMakeBill" />
+
+
+        <LinearLayout
+            android:id="@+id/llll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name">
+
+            <TextView
+                android:id="@+id/amount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="10202₹"
+                android:textColor="@color/colorPrimaryVariant"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:foregroundGravity="center"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="@android:color/transparent">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/colourPaidDue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@color/Green"
+                    android:fontFamily="@font/latobold"
+                    android:gravity="center"
+                    android:paddingStart="16dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="4dp"
+                    android:text="Pending"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/latobold"
+            android:text="12-01-2022"
+            android:textColor="@color/grayLight"
+            android:textSize="11sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llll" />
+
+        <TextView
+            android:id="@+id/itemCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/nototto"
+            android:text="Items(12)"
+            android:textColor="@color/AWTDarkGray"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/date" />
+
+        <LinearLayout
+            android:id="@+id/grpRecycle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/itemCount">
+
+            <TextView
+                android:id="@+id/desciptionList"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/latobold"
+                android:text="10000+100000+100000+1000+1000000+10000+100000+100000"
+                android:textAllCaps="true" />
+
+            <View
+                android:layout_width=".5dip"
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:background="@color/grayLight" />
+
+
+            <TextView
+                android:id="@+id/totalList"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="10000+100000+100000+1000+1000000+10000+100000+100000" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/line12"
+            android:layout_width="match_parent"
+            android:layout_height=".1dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/grayLight"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/grpRecycle" />
+
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/subbtractButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dip"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="4dp"
+            android:elevation="6dp"
+            android:fontFamily="@font/latobold"
+            android:text="Received Payment"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:theme="@style/Widget.AppCompat.Button.Small"
+            android:visibility="invisible"
+            app:backgroundTint="@color/colorPrimaryVariant"
+            app:icon="@drawable/currency_inr"
+            app:iconGravity="textStart"
+            app:iconTint="@color/white"
+            app:layout_constraintBottom_toTopOf="@+id/addButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/addButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="32dp"
+            android:elevation="6dp"
+            android:fontFamily="@font/latobold"
+            android:text="Extra Charges"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:tooltipText="Add charges in bill"
+            android:visibility="invisible"
+            app:backgroundTint="@color/black"
+            app:icon="@drawable/vectorpen"
+            app:iconGravity="textStart"
+            app:iconTint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/viewPdf"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="4dp"
+            android:elevation="6dp"
+            android:fontFamily="@font/latobold"
+            android:text="View Bill"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:tooltipText="Add charges in bill"
+            app:backgroundTint="@color/black"
+            app:icon="@drawable/baseline_remove_red_eye_24"
+            app:iconGravity="textStart"
+            app:iconTint="@color/white"
+            app:layout_constraintBottom_toTopOf="@+id/editdeleteButtonLinerLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <LinearLayout
+            android:id="@+id/editdeleteButtonLinerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/editBill"
+                android:layout_width="match_parent"
+                android:layout_height="48dip"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:elevation="6dp"
+                android:fontFamily="@font/latobold"
+                android:text="Edit Bill"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:theme="@style/Widget.AppCompat.Button.Small"
+                app:backgroundTint="@color/colorPrimaryVariant"
+                app:icon="@drawable/vectorpen"
+                app:iconGravity="textStart"
+                app:iconTint="@color/white" />
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/deleteBill"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:elevation="6dp"
+                android:fontFamily="@font/latobold"
+                android:text="Delete Bill"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:tooltipText="Add charges in bill"
+                app:backgroundTint="@color/redForSub"
+                app:icon="@drawable/baseline_delete_outline_24"
+                app:iconGravity="textStart"
+                app:iconTint="@color/white" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewRP"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:clickable="false"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/subbtractButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line12" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

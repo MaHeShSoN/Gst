@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- item_layout.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:padding="2dp"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/descriptionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:gravity="start"
+        android:hint="Items"
+        android:layout_weight="1"
+        android:fontFamily="@font/montserratmedium"
+        android:padding="2dp"/>
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/minusButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@drawable/custom_shape"
+        android:backgroundTint="@color/Red"
+        android:layout_weight=".01"
+
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:theme="?android:attr/buttonStyleSmall"
+        android:src="@drawable/minus"
+        />
+
+</LinearLayout>

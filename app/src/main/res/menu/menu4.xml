@@ -1,0 +1,13 @@
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/nextButton"
+        android:title="Next"
+        android:checkable="true"
+        app:showAsAction="ifRoom">
+    </item>
+
+
+</menu>

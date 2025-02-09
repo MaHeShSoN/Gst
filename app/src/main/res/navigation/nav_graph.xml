@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.goldinvoice0.billingsoftware.SplashFragment"
+        android:label="fragment_splash"
+        tools:layout="@layout/fragment_splash" >
+        <action
+            android:id="@+id/action_splashFragment_to_takeInputs"
+            app:destination="@id/takeInputs" />
+        <action
+            android:id="@+id/action_splashFragment_to_mainScreen"
+            app:destination="@id/mainScreen" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/takeInputs"
+        android:name="com.goldinvoice0.billingsoftware.TakeInputs"
+        android:label="fragment_take_inputs"
+        tools:layout="@layout/fragment_take_inputs" >
+
+        <action
+            android:id="@+id/action_takeInputs_to_signatureFragement"
+            app:destination="@id/signatureFragement" />
+    </fragment>
+    <fragment
+        android:id="@+id/test"
+        android:name="com.goldinvoice0.billingsoftware.test"
+        android:label="fragment_test"
+        tools:layout="@layout/fragment_test" />
+    <fragment
+        android:id="@+id/customerList"
+        android:name="com.goldinvoice0.billingsoftware.customerList"
+        android:label="fragment_customer_list"
+        tools:layout="@layout/fragment_customer_list" >
+        <action
+            android:id="@+id/action_customerList_to_newBill"
+            app:destination="@id/newBill" />
+        <action
+            android:id="@+id/action_customerList_to_orderInput"
+            app:destination="@id/orderInput" />
+        <action
+            android:id="@+id/action_customerList_to_contactListFragment"
+            app:destination="@id/contactListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newBill"
+        android:name="com.goldinvoice0.billingsoftware.newBill"
+        android:label="fragment_new_bill"
+        tools:layout="@layout/fragment_new_bill" >
+        <action
+            android:id="@+id/action_newBill_to_paymentEntry"
+
+            app:destination="@id/paymentEntry" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/paymentEntry"
+        android:name="com.goldinvoice0.billingsoftware.paymentEntry"
+        android:label="fragment_payment_entry"
+        tools:layout="@layout/fragment_payment_entry" >
+        <action
+            android:id="@+id/action_paymentEntry_to_viewBill"
+            app:popUpTo="@id/mainScreen"
+            app:popUpToInclusive="false"
+            app:destination="@id/viewBill" />
+    </fragment>
+    <fragment
+        android:id="@+id/viewBill"
+        android:name="com.goldinvoice0.billingsoftware.viewBill"
+        android:label="fragment_view_bill"
+        tools:layout="@layout/fragment_view_bill" />
+    <fragment
+        android:id="@+id/listBillView"
+        android:name="com.goldinvoice0.billingsoftware.listBillView"
+        android:label="fragment_list_bill_view"
+        tools:layout="@layout/fragment_list_bill_view" >
+        <action
+            android:id="@+id/action_listBillView_to_viewBill"
+            app:destination="@id/viewBill" />
+    </fragment>
+    <fragment
+        android:id="@+id/mainScreen"
+        android:name="com.goldinvoice0.billingsoftware.MainScreen"
+        android:label="fragment_main_screen"
+        tools:layout="@layout/fragment_main_screen" >
+        <action
+            android:id="@+id/action_mainScreen_to_customerList"
+            app:destination="@id/customerList" />
+        <action
+            android:id="@+id/action_mainScreen_to_listBillView"
+            app:destination="@id/listBillView" />
+        <action
+            android:id="@+id/action_mainScreen_to_signatureFragement"
+            app:destination="@id/signatureFragement" />
+        <action
+            android:id="@+id/action_mainScreen_to_storeFragmentEdit"
+            app:destination="@id/storeFragmentEdit" />
+        <action
+            android:id="@+id/action_mainScreen_to_orderEdit"
+            app:destination="@id/orderEdit" />
+    </fragment>
+    <fragment
+        android:id="@+id/signatureFragement"
+        android:name="com.goldinvoice0.billingsoftware.SignatureFragement"
+        android:label="fragment_signature_fragement"
+        tools:layout="@layout/fragment_signature_fragement" >
+        <action
+            android:id="@+id/action_signatureFragement_to_mainScreen"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="false"
+            app:destination="@id/mainScreen" />
+    </fragment>
+    <fragment
+        android:id="@+id/storeFragmentEdit"
+        android:name="com.goldinvoice0.billingsoftware.StoreFragmentEdit"
+        android:label="fragment_store_edit"
+        tools:layout="@layout/fragment_store_edit" >
+        <action
+            android:id="@+id/action_storeFragmentEdit_to_signatureFragement"
+            app:destination="@id/signatureFragement" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderInput"
+        android:name="com.goldinvoice0.billingsoftware.OrderInput"
+        android:label="fragment_order_input"
+        tools:layout="@layout/fragment_order_input" >
+
+
+
+
+        <action
+            android:id="@+id/action_orderInput_to_orderInputContainer"
+            app:destination="@id/orderInputContainer" />
+        <action
+            android:id="@+id/action_orderInput_to_orderInputContainer2"
+            app:destination="@id/orderInputContainer2" />
+        <action
+            android:id="@+id/action_orderInput_to_mainScreen"
+            app:destination="@id/mainScreen" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/viewOrderFragment"
+        android:name="com.goldinvoice0.billingsoftware.ViewOrderFragment"
+        android:label="fragment_view_order"
+        app:popUpToInclusive="false"
+        tools:layout="@layout/fragment_view_order" />
+    <fragment
+        android:id="@+id/orderEdit"
+        android:name="com.goldinvoice0.billingsoftware.OrderEdit"
+        android:label="fragment_order_edit"
+        tools:layout="@layout/fragment_order_edit" >
+        <action
+            android:id="@+id/action_orderEdit_to_orderInputContainer"
+            app:destination="@id/orderInputContainer" />
+        <action
+            android:id="@+id/action_orderEdit_to_orderInputContainer2"
+            app:destination="@id/orderInputContainer2" />
+    </fragment>
+    <fragment
+        android:id="@+id/contactListFragment"
+        android:name="com.goldinvoice0.billingsoftware.ContactListFragment"
+        android:label="fragment_contact_list"
+        tools:layout="@layout/fragment_contact_list" >
+        <action
+            android:id="@+id/action_contactListFragment_to_customerList"
+            app:popUpTo="@id/mainScreen"
+            app:popUpToInclusive="false"
+            app:destination="@id/customerList" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderInputContainer"
+        android:name="com.goldinvoice0.billingsoftware.OrderInputContainer"
+        android:label="fragment_order_input_container"
+        tools:layout="@layout/fragment_order_input_container" />
+    <fragment
+        android:id="@+id/orderInputContainer2"
+        android:name="com.goldinvoice0.billingsoftware.OrderInputContainer2"
+        android:label="fragment_order_input_container2"
+        tools:layout="@layout/fragment_order_input_container2" />
+
+</navigation>

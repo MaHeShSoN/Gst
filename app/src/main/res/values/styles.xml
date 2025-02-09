@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ShapeAppearanceOverlayExtended" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">48dp</item>
+        <item name="android:textSize">16sp</item>
+
+    </style>
+
+    <style name="BottomNavigationTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/colorPrimaryVariant</item>
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
+
+    <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="endIconTint">@color/colorPrimaryVariant</item>
+        <item name="boxStrokeColor">@color/colorPrimaryVariant</item>
+        <item name="hintTextColor">@color/colorPrimaryVariant</item>
+    </style>
+</resources>

@@ -1,0 +1,18 @@
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/callButton"
+        android:title="Call"
+        android:icon="@drawable/phone_outline"
+        app:showAsAction="ifRoom">
+    </item>
+    <!-- Submit button -->
+    <item
+        android:id="@+id/buttonSubmit"
+        android:title="Save"
+        android:visible="false"
+        app:showAsAction="ifRoom"/>
+
+</menu>

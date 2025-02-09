@@ -1,0 +1,72 @@
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardViewHolder"
+    style="@style/Widget.Material3.CardView.Outlined"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="8dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginBottom="2dp"
+    android:checkable="true"
+    android:clickable="true"
+    android:background="@color/grayLight1"
+    android:backgroundTint="@color/grayLight1"
+    android:fadingEdgeLength="@dimen/cardview_compat_inset_shadow"
+    app:strokeColor="@color/black"
+    app:strokeWidth=".08dp"
+    android:focusable="true"
+    app:cardCornerRadius="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/grayLight1"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textViewCustomerName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/latobold"
+            android:padding="2dp"
+            android:text="Customer Name"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/grayLight1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textViewCustomerNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@color/grayLight1"
+                android:fontFamily="@font/montserratmedium"
+                android:gravity="start"
+                android:hint="number"
+                android:padding="6dp"
+                android:text="+9166770604"
+                android:textColor="@color/black"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/textViewCustomerAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/grayLight1"
+                android:fontFamily="@font/montserratmedium"
+                android:gravity="start"
+                android:hint="Address"
+                android:padding="6dp"
+                android:text="Main Bazar,Sathin,Pipar,Jodhpur,Rajasthan"
+                android:textColor="@color/black"
+                android:textSize="11sp" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

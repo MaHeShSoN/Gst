@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/layout1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent  ">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputViewJewelleryName_03"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:hint="@string/jewellery_name"
+                android:textColorHint="@color/colorPrimaryVariant"
+                app:endIconMode="dropdown_menu"
+                app:expandedHintEnabled="false"
+                app:helperText="Ex : Chudi,Nath,Bajuband..."
+                app:helperTextEnabled="true"
+                app:helperTextTextColor="@color/AWTGray"
+                app:hintEnabled="true">
+
+                <AutoCompleteTextView
+                    android:id="@+id/editViewJewelleryName_03"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Ring"
+                    android:inputType="textAutoComplete|textCapSentences|textMultiLine"
+                    android:text="Ring"
+                    android:textSize="14sp"
+                    app:endIconMode="clear_text" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/grosswtTextInputLayotu"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:hint="Gross Weight"
+                    android:textColorHint="@color/colorPrimaryVariant"
+                    app:endIconMode="clear_text"
+                    app:expandedHintEnabled="false"
+                    app:hintEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/grosswtTextField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="11.66gm"
+                        android:inputType="numberDecimal"
+                        android:maxLength="6"
+                        android:text="11.66"
+                        android:textSize="14sp"
+                        app:endIconMode="clear_text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/netwtTextInputLayotu"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:hint="Net Weight"
+                    android:textColorHint="@color/colorPrimaryVariant"
+                    app:endIconMode="clear_text"
+                    app:expandedHintEnabled="false"
+                    app:hintEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/netswtTextField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="10.66gm"
+                        android:inputType="numberDecimal"
+                        android:maxLength="6"
+                        android:text="10.66"
+                        android:textSize="14sp"
+                        app:endIconMode="clear_text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/stoneValueTextInputLayotu"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:hint="Diamond Price"
+                    android:textColorHint="@color/colorPrimaryVariant"
+                    app:endIconMode="clear_text"
+                    app:expandedHintEnabled="false"
+                    app:hintEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/stoneValueTextField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="1500"
+                        android:inputType="number"
+                        android:maxLength="4"
+                        android:text="1500"
+                        android:textSize="14sp"
+                        app:endIconMode="clear_text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputViewpice"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:hint="Count"
+                        android:textColorHint="@color/colorPrimaryVariant"
+                        app:endIconMode="clear_text"
+                        app:expandedHintEnabled="false"
+                        app:hintEnabled="true">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editViewpice"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="1"
+                            android:inputType="number"
+                            android:maxLength="2"
+                            android:text="1"
+                            android:textSize="14sp"
+                            app:endIconMode="clear_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputKt"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:hint="Purity"
+                        android:textColorHint="@color/colorPrimaryVariant"
+                        app:endIconMode="dropdown_menu"
+                        app:expandedHintEnabled="false"
+                        app:hintEnabled="true">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/editViewKt"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="22k"
+                            android:textSize="14sp"
+                            app:endIconMode="clear_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputViewMobilNumber_03"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:hint="@string/making_charge_1gm"
+                    android:textColorHint="@color/colorPrimaryVariant"
+                    app:endIconMode="clear_text"
+                    app:expandedHintEnabled="false"
+                    app:helperTextEnabled="true"
+                    android:layout_weight="1"
+                    app:helperTextTextColor="@color/grayLight"
+                    app:hintEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editViewMobilNumber_03"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="30000"
+                        android:inputType="number"
+                        android:text="3000"
+                        android:textSize="14sp"
+                        app:endIconMode="clear_text" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputViewWastage"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:hint="Wastage"
+                    android:textColorHint="@color/colorPrimaryVariant"
+                    app:endIconMode="clear_text"
+                    app:expandedHintEnabled="false"
+                    app:helperTextEnabled="true"
+                    app:helperTextTextColor="@color/grayLight"
+                    app:hintEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editViewWastage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:inputType="number"
+                        android:textSize="14sp"
+                        app:endIconMode="clear_text" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+            </LinearLayout>
+
+
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputViewAddress_03"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:hint="@string/gold_price_1gm"
+                android:textColorHint="@color/colorPrimaryVariant"
+                app:endIconMode="clear_text"
+                app:expandedHintEnabled="false"
+                app:hintEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editViewAddress_03"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="61000,62000"
+                    android:inputType="number"
+                    android:text="61000"
+                    android:textSize="14sp"
+                    app:endIconMode="clear_text" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

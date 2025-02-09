@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/billesFragmentMenu"
+        android:icon="@drawable/receipt_24px"
+        android:title="Receipts" />
+    <item
+        android:id="@+id/dashboardFragmentMenu"
+        android:icon="@drawable/analytics_24px"
+        android:title="Dashboard" />
+    <item
+        android:id="@+id/itemsFragmentMenu"
+        android:icon="@drawable/groups_24px"
+        android:title="Customers" />
+
+    <item
+        android:id="@+id/settingFragmentMenu"
+        android:icon="@drawable/settings_24px"
+        android:title="Setting" />
+</menu>

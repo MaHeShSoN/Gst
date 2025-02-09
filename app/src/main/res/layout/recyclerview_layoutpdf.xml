@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardViewItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="16dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginBottom="2dp"
+    android:checkable="true"
+    android:clickable="true"
+    android:background="@color/grayLight1"
+    android:backgroundTint="@color/grayLight1"
+    android:fadingEdgeLength="@dimen/cardview_compat_inset_shadow"
+    app:strokeColor="@color/black"
+    app:strokeWidth=".08dp"
+    android:focusable="true"
+    app:cardCornerRadius="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:orientation="vertical">
+
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/customerNameLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-thin"
+            android:maxWidth="100dp"
+            android:text="Mahesh Soni"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/textForDuePym"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textForDuePym"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="serif"
+            android:gravity="end"
+            android:hint="1212"
+            android:paddingStart="1dp"
+            android:paddingEnd="6dp"
+            android:textColor="@color/colorPrimaryVariant"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:theme="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="sans-serif-thin"
+            android:hint="Date"
+            android:textColor="@color/grayLight"
+            android:textSize="12sp"
+            android:theme="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/customerNameLayout" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hapticFeedbackEnabled="true"
+            app:cardCornerRadius="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textForDuePym"
+            app:strokeColor="@android:color/transparent">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/colourPaidDue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#8BC34A"
+                android:fontFamily="sans-serif-black"
+                android:gravity="end"
+                android:paddingStart="16dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="4dp"
+                android:text="Paid"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</com.google.android.material.card.MaterialCardView>

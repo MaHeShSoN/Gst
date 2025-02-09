@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <color name="blackVarient">#262626</color>
+    <color name="blackVarient2">#1C1B1F</color>
+    <color name="blackVarient3">#47454D</color>
+    <color name="blackVarient4">#1A191E</color>
+    <color name="grayLight">#807F7F</color>
+    <color name="grayLight1">#f2f1f2</color>
+
+
+    <color name="white">#FFFFFF</color>
+    <color name="whiteVarient">#FFFFFF</color>
+    <color name="parpal">#EADDFF</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+    <color name="light_blue_A200">#FFEA00</color>
+    <color name="light_blue_A400">#FF00B0FF</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="colorPrimary">#135dc7</color>
+    <color name="colorPrimaryVariant">#2196F3</color>
+    <color name="colorSecondary">#f3881d</color>
+    <color name="colorAccent">#FF00B0FF</color>
+    <color name="blueBackground">#F8FDFF</color>
+
+    <color name="greenForAdd">#2CC9A0</color>
+    <color name="redForSub">#FF0000</color>
+    <color name="Green">#8BEE19</color>
+    <color name="GreenForDone">#00C909</color>
+    <color name="Red">#FFE94040</color>
+    <color name="redVardinet">#C7ABAB</color>
+    <color name="postBackground">#F5F5F5</color>
+
+    <color name="AWTBlack">#FF000000</color>
+    <color name="AWTWhite">#FFFFFFFF</color>
+    <color name="AWTRed">#FFFF0000</color>
+    <color name="AWTGreen">#00FF00</color>
+    <color name="AWTBlue">#00E676</color>
+    <color name="AWTYellow">#FFD801</color>
+    <color name="AWTCyan">#00FFFF</color>
+    <color name="AWTMagenta">#FF00FF</color>
+    <color name="AWTGray">#FF808080</color>
+    <color name="AWTLightGray">#FFD3D3D3</color>
+    <color name="AWTDarkGray">#FFA9A9A9</color>
+    <color name="AWTOrange">#FFDC5D</color>
+    <color name="AWTPink">#FFAFAF</color>
+
+    <color name="status_pending">#FFA000</color>
+    <color name="status_in_progress">#1976D2</color>
+    <color name="status_completed">#388E3C</color>
+</resources>

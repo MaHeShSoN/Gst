@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">Gst</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="name">Name</string>
+    <string name="shop_name">Shop Name</string>
+    <string name="address_1">Address 1</string>
+    <string name="bills">Bills</string>
+    <string name="new_bill">New Bill</string>
+    <string name="add_customer">Add Customer</string>
+    <string name="jewellery_name">Jewellery Name</string>
+    <string name="making_charge_1gm">Labour</string>
+    <string name="gold_price_1gm">Gold Rate <font fgcolor="#FFFF0000"><u>(10 gram)</u></font></string>
+    <string name="pcs">Pcs</string>
+
+    <string-array name="listOfKt">
+        <item>22kt</item>
+        <item>20kt</item>
+        <item>18kt</item>
+        <item>16kt</item>
+        <item>14kt</item>
+    </string-array>
+
+    <string-array name="listOfJewelleryItems">
+        <item>AAD</item>
+        <item>BAJU</item>
+        <item>RIGN</item>
+        <item>SHEESHPHOOL</item>
+        <item>RAKDHISET</item>
+        <item>RANIHAAR</item>
+        <item>NECKLACE</item>
+        <item>CHOKER</item>
+        <item>TIMANYA</item>
+        <item>MANGALSUTRA</item>
+        <item>TIKA</item>
+        <item>BAJUBANDH</item>
+        <item>HATHPHOOL</item>
+        <item>BANGLES</item>
+        <item>EARINGS</item>
+        <item>JHUL</item>
+        <item>KANDORA</item>
+        <item>BHUJBANDH</item>
+        <item>BAALI</item>
+        <item>CHAND BAALI</item>
+        <item>NATH</item>
+        <item>PENDANT SETS</item>
+        <item>TOPS</item>
+        <item>JHUMKI</item>
+        <item>BRACLETS</item>
+        <item>TEWTA</item>
+        <item>MALA</item>
+        <item>PUNCHA</item>
+    </string-array>
+
+</resources>

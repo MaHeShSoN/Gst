@@ -1,0 +1,64 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:title="Manage">
+        <menu>
+            <item
+                android:id="@+id/edit_add_jewellery_items"
+                android:checkable="true"
+                android:icon="@drawable/pen"
+                android:title="Jewellery Items"
+                app:showAsAction="ifRoom" />
+
+        </menu>
+    </item>
+    <item
+        android:id="@+id/labels_item"
+        android:title="Edit Details">
+        <menu>
+            <item
+                android:id="@+id/shopDetails"
+                android:checkable="true"
+                android:icon="@drawable/store"
+                android:title="Shop Details"
+                app:showAsAction="ifRoom" />
+
+        </menu>
+    </item>
+
+    <item android:title="Need Help">
+        <menu>
+
+
+            <item
+                android:id="@+id/Contect_Us"
+                android:checkable="true"
+                android:icon="@drawable/email_outline"
+                android:title="Contact Us"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/PrivacyPolicy"
+                android:checkable="true"
+                android:icon="@drawable/file_document_multiple_outline"
+                android:title="Privacy Policy "
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/Write_Us"
+                android:checkable="true"
+                android:icon="@drawable/message_alert_outline"
+                android:title="Suggestion"
+                app:showAsAction="ifRoom" />
+
+
+        </menu>
+    </item>
+
+
+<!--    <item-->
+<!--        android:id="@+id/Logout"-->
+<!--        android:checkable="true"-->
+<!--        android:title="SignOut"-->
+<!--        android:icon="@drawable/logout"-->
+<!--        android:iconTint="@color/redForSub"-->
+<!--        app:showAsAction="never" />-->
+
+</menu>

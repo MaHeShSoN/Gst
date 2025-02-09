@@ -1,0 +1,53 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Gst" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimaryDark">@color/white</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+        <item name="colorAccent">@color/light_blue_A400</item>
+        <item name="colorTertiary">@color/colorPrimaryVariant</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.Gst" parent="Base.Theme.Gst" />
+
+    <style name="TextView" parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:font">@font/latobold</item>
+    </style>
+
+    <style name="Widget.Material3.Search.Toolbar.Button.Navigation." parent="Widget.Material3.Search.Toolbar.Button.Navigation">
+        <item name="navigationIconTint">@color/black</item>
+        <item name="iconTint">@color/colorPrimaryVariant</item>
+        <item name="fontFamily">@font/latobold</item>
+        <item name="background">@color/white</item> <!-- Background color -->
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="Widget.Material3.Search.Toolbar.Button.Navigation.2" parent="Widget.Material3.Search.Toolbar.Button.Navigation">
+        <item name="fontFamily">@font/latobold</item>
+        <item name="background">@color/white</item> <!-- Background color -->
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="Widget.Material3.PopupMenu." parent="Widget.Material3.PopupMenu">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:iconTint">@color/white</item>
+        <item name="iconTint">@color/white</item>
+    </style>
+
+    <style name="fullScreenMaterialAlertDialogBuilder" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:colorBackground">#FFFFFF</item>
+        <item name="android:colorAccent">#FFFFFF</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:windowBackground">#FFFFFF</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+</resources>
