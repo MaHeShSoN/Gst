@@ -39,14 +39,17 @@
         android:label="fragment_customer_list"
         tools:layout="@layout/fragment_customer_list" >
         <action
-            android:id="@+id/action_customerList_to_newBill"
-            app:destination="@id/newBill" />
-        <action
             android:id="@+id/action_customerList_to_orderInput"
             app:destination="@id/orderInput" />
         <action
             android:id="@+id/action_customerList_to_contactListFragment"
             app:destination="@id/contactListFragment" />
+        <action
+            android:id="@+id/action_customerList_to_billsInputsFragment"
+            app:destination="@id/billsInputsFragment" />
+        <action
+            android:id="@+id/action_customerList_to_orderInput2"
+            app:destination="@id/orderInput" />
     </fragment>
     <fragment
         android:id="@+id/newBill"
@@ -54,9 +57,8 @@
         android:label="fragment_new_bill"
         tools:layout="@layout/fragment_new_bill" >
         <action
-            android:id="@+id/action_newBill_to_paymentEntry"
-
-            app:destination="@id/paymentEntry" />
+            android:id="@+id/action_newBill_to_billsInputsFragment"
+            app:destination="@id/billsInputsFragment" />
 
     </fragment>
     <fragment
@@ -65,10 +67,8 @@
         android:label="fragment_payment_entry"
         tools:layout="@layout/fragment_payment_entry" >
         <action
-            android:id="@+id/action_paymentEntry_to_viewBill"
-            app:popUpTo="@id/mainScreen"
-            app:popUpToInclusive="false"
-            app:destination="@id/viewBill" />
+            android:id="@+id/action_paymentEntry_to_billsInputsFragment"
+            app:destination="@id/billsInputsFragment" />
     </fragment>
     <fragment
         android:id="@+id/viewBill"
@@ -83,15 +83,21 @@
         <action
             android:id="@+id/action_listBillView_to_viewBill"
             app:destination="@id/viewBill" />
+        <action
+            android:id="@+id/action_listBillView_to_paymentEntry"
+            app:destination="@id/paymentEntry" />
+        <action
+            android:id="@+id/action_listBillView_to_newBill"
+            app:destination="@id/newBill" />
+        <action
+            android:id="@+id/action_listBillView_to_mainScreen"
+            app:destination="@id/mainScreen" />
     </fragment>
     <fragment
         android:id="@+id/mainScreen"
         android:name="com.goldinvoice0.billingsoftware.MainScreen"
         android:label="fragment_main_screen"
         tools:layout="@layout/fragment_main_screen" >
-        <action
-            android:id="@+id/action_mainScreen_to_customerList"
-            app:destination="@id/customerList" />
         <action
             android:id="@+id/action_mainScreen_to_listBillView"
             app:destination="@id/listBillView" />
@@ -104,6 +110,12 @@
         <action
             android:id="@+id/action_mainScreen_to_orderEdit"
             app:destination="@id/orderEdit" />
+        <action
+            android:id="@+id/action_mainScreen_to_billsInputsFragment"
+            app:destination="@id/billsInputsFragment" />
+        <action
+            android:id="@+id/action_mainScreen_to_orderInput"
+            app:destination="@id/orderInput" />
     </fragment>
     <fragment
         android:id="@+id/signatureFragement"
@@ -143,6 +155,14 @@
         <action
             android:id="@+id/action_orderInput_to_mainScreen"
             app:destination="@id/mainScreen" />
+        <action
+            android:id="@+id/action_orderInput_to_customerList"
+            app:destination="@id/customerList" />
+        <action
+            android:id="@+id/action_orderInput_to_viewOrderFragment"
+            app:popUpToInclusive="false"
+            app:popUpTo="@id/mainScreen"
+            app:destination="@id/viewOrderFragment" />
 
     </fragment>
     <fragment
@@ -158,10 +178,23 @@
         tools:layout="@layout/fragment_order_edit" >
         <action
             android:id="@+id/action_orderEdit_to_orderInputContainer"
-            app:destination="@id/orderInputContainer" />
+            app:popUpToInclusive="false"
+            app:popUpTo="@id/orderEdit"
+            app:destination="@id/orderInputContainer"
+            />
         <action
             android:id="@+id/action_orderEdit_to_orderInputContainer2"
+            app:popUpToInclusive="false"
+            app:popUpTo="@id/orderEdit"
             app:destination="@id/orderInputContainer2" />
+        <action
+            android:id="@+id/action_orderEdit_to_viewOrderFragment"
+            app:popUpToInclusive="false"
+            app:popUpTo="@id/mainScreen"
+            app:destination="@id/viewOrderFragment" />
+        <action
+            android:id="@+id/action_orderEdit_to_convertOrderToBillFragment"
+            app:destination="@id/convertOrderToBillFragment" />
     </fragment>
     <fragment
         android:id="@+id/contactListFragment"
@@ -184,5 +217,33 @@
         android:name="com.goldinvoice0.billingsoftware.OrderInputContainer2"
         android:label="fragment_order_input_container2"
         tools:layout="@layout/fragment_order_input_container2" />
+    <fragment
+        android:id="@+id/billsInputsFragment"
+        android:name="com.goldinvoice0.billingsoftware.BillsInputsFragment"
+        android:label="fragment_bills_inputs"
+        tools:layout="@layout/fragment_bills_inputs" >
+        <action
+            android:id="@+id/action_billsInputsFragment_to_newBill"
+            app:destination="@id/newBill" />
+        <action
+            android:id="@+id/action_billsInputsFragment_to_paymentEntry"
+            app:destination="@id/paymentEntry" />
+        <action
+            android:id="@+id/action_billsInputsFragment_to_customerList"
+            app:destination="@id/customerList" />
+        <action
+            android:id="@+id/action_billsInputsFragment_to_mainScreen"
+            app:destination="@id/mainScreen" />
+        <action
+            android:id="@+id/action_billsInputsFragment_to_viewBill"
+            app:popUpTo="@id/mainScreen"
+            app:popUpToInclusive="false"
+            app:destination="@id/viewBill" />
+    </fragment>
+    <fragment
+        android:id="@+id/convertOrderToBillFragment"
+        android:name="com.goldinvoice0.billingsoftware.ConvertOrderToBillFragment"
+        android:label="fragment_convert_order_to_bill"
+        tools:layout="@layout/fragment_convert_order_to_bill" />
 
 </navigation>

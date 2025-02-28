@@ -1,19 +1,50 @@
-<menu xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- Paid Button -->
     <item
-        android:id="@+id/action_update_all"
-        android:title="Update All"
-        app:showAsAction="always"
-        android:iconTint="@color/greenForAdd"
-        android:icon="@drawable/check_24px" />
-
+        android:id="@+id/buttonPaid"
+        android:icon="@drawable/_26568_check_circle_icon"
+        android:title="Paid"
+        app:showAsAction="ifRoom" />
+    <!-- Share PDF -->
     <item
-        android:id="@+id/action_delete"
-        android:title="Delete"
-        app:showAsAction="always"
-        android:icon="@drawable/baseline_delete_outline_24" />
+        android:id="@+id/buttonSharePdf"
+        android:title="Share PDF"
+        android:icon="@drawable/share_variant_outline"
+        app:showAsAction="ifRoom" />
+
+    <!-- Share to WhatsApp -->
+    <item
+        android:id="@+id/buttonShareWhatsApp"
+        android:title="Share to WhatsApp"
+        app:showAsAction="ifRoom" />
+
+    <!-- Open PDF -->
+    <item
+        android:id="@+id/buttonOpenPdf"
+        android:title="Open PDF"
+        app:showAsAction="ifRoom" />
+
+    <!-- Print PDF -->
+    <item
+        android:id="@+id/buttonPrintPdf"
+        android:title="Print PDF"
+        app:showAsAction="ifRoom" />
 
 
+    <!-- Save PDF to Phone -->
+    <item
+        android:id="@+id/buttonSavePdf"
+        android:title="Save PDF to Phone"
+        app:showAsAction="ifRoom" />
+
+    <!-- Send SMS -->
+
+
+    <!-- Delete Invoice -->
+    <item
+        android:id="@+id/buttonDeleteInvoice"
+        android:title="Delete Invoice"
+        app:showAsAction="ifRoom" />
 </menu>

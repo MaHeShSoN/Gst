@@ -51,5 +51,8 @@
         <item>MALA</item>
         <item>PUNCHA</item>
     </string-array>
-
+    <string-array name="making_charge_types">
+        <item>PER GRAM</item>
+        <item>FIX</item>
+    </string-array>
 </resources>

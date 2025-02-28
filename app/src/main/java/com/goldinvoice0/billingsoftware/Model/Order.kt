@@ -15,7 +15,7 @@ data class Order(
     val deliveryDate: String,
     val deliveryStatus: DeliveryStatus,
     @TypeConverters(PaymentListConverter::class)
-    val payments: List<Payment>,
+    val payments: List<PaymentTransaction>,
     @TypeConverters(JewelryItemListConverter::class)
     val jewelryItems: List<JewelryItem>,
     val orderNumber: String

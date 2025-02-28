@@ -1,442 +1,791 @@
 package com.goldinvoice0.billingsoftware
 
-import android.content.DialogInterface
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.print.PrintManager
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.view.animation.AnimationUtils
+import android.view.animation.LayoutAnimationController
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.goldinvoice0.billingsoftware.Adapter.ItemsAdapter
-import com.goldinvoice0.billingsoftware.Model.PdfData
-import com.goldinvoice0.billingsoftware.Model.PdfFinalData
+import com.goldinvoice0.billingsoftware.Adapter.ExpandableAdapter_Display
+import com.goldinvoice0.billingsoftware.Adapter.ReceviedPaymentAdapter_Display
+import com.goldinvoice0.billingsoftware.Model.BillInputs
+import com.goldinvoice0.billingsoftware.Model.ItemModel
+import com.goldinvoice0.billingsoftware.Model.PaymentMethod
+import com.goldinvoice0.billingsoftware.Model.PaymentRecived
+import com.goldinvoice0.billingsoftware.Model.RecivedPaymentType
 import com.goldinvoice0.billingsoftware.Model.Shop
-import com.goldinvoice0.billingsoftware.ViewModel.PdfFinalDataViewModel
+import com.goldinvoice0.billingsoftware.ViewModel.BillInputViewModel
 import com.goldinvoice0.billingsoftware.ViewModel.ShopViewModel
 import com.goldinvoice0.billingsoftware.databinding.FragmentListBillViewBinding
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
-import come.Gst.pdf.PdfGenerationClasses.PdfGeneratorclass2
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class listBillView : Fragment() {
-
     private var _binding: FragmentListBillViewBinding? = null
     private val binding get() = _binding!!
+
+    private val billInputViewModel: BillInputViewModel by activityViewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
-    private val pdfFinalDataViewModel: PdfFinalDataViewModel by viewModels()
-    private var totalAmount: Int = 0
-    private var list = mutableListOf<String>()
-    private lateinit var adapter1: ItemsAdapter
-    private lateinit var pdfData1: PdfData
-    private var id: Int = 0
-    private val shopViewModel: ShopViewModel by viewModels()
+
+    //for items like add,bau
+    private val jewelryViewModel: JewelryViewModel by activityViewModels()
+
+    private lateinit var adapterForItems: ExpandableAdapter_Display
+    private lateinit var adapterForPayment: ReceviedPaymentAdapter_Display
+
+    var phoneNumber: String = ""
+
+
     private lateinit var shop: Shop
-    private var number = 0L
-    private lateinit var pdfFinalData1: PdfFinalData
-    private lateinit var nextNumber: String
-    private var amountTextList = mutableListOf<String>()
+    private val shopViewModel: ShopViewModel by activityViewModels()
+    private lateinit var file: File
+
+
+    private var pendingFile: File? = null
+    private var pendingFileName: String? = null
+
+    private var currentBill: BillInputs? = null
+
+    val currentDate = LocalDate.now()
+    val formattedDate = currentDate.format(
+        DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.getDefault())
+    )
+
+    companion object {
+        private const val ARG_BILL_ID = "billId"
+        private const val ARG_EDIT_BILL = "EditBill"
+        private const val ARG_EDIT_PAYMENT = "EditPayment"
+        private const val ARG_TOTAL_AMOUNT = "totalAmount"
+    }
+
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentListBillViewBinding.inflate(inflater, container, false)
-        sharedViewModel.getReceivedList().observe(viewLifecycleOwner) {
-            amountTextList = it.amountTextList
-            list = it.receivedList
-            pdfFinalData1 = it
-            totalAmount = it.totalAmount
-            nextNumber = it.invoiceNumber
-            Log.d("amountText",totalAmount.toString()+"first")
-            id = it.id
-            number = it.phone.toLong()
-            binding.amount.text = it.totalAmount.toString()
-            binding.name.text = it.name
-            binding.date.text = it.date
-            val itemCountText = "Item"
-            binding.itemCount.text = "$itemCountText (${it.descriptionList.size})"
-            binding.desciptionList.text = it.descriptionList.joinToString(",")
-            binding.totalList.text = it.totalList.joinToString(",")
 
-            check()
+        binding.spinner.progress = 45
+        binding.spinner2.progress = 45
 
-
-            setUpRecyclerView()
-            pdfData1 = PdfData(
-                it.fileName,
-                it.name,
-                it.phone,
-                it.address,
-                it.date,
-                it.descriptionList,
-                it.grWtList,
-                it.ntWtList,
-                it.makingChargeList,
-                it.stoneValueList,
-                it.goldPriceList,
-                it.totalList,
-                it.pcsList,
-                it.karatList,
-                it.listOfWastage,
-                it.invoiceNumber
-            )
-        }
-
-        shopViewModel.shop.observe(viewLifecycleOwner, Observer {
-            shop = it
-        })
-
-        binding.topAppBar.menu.findItem(R.id.buttonSubmit)
-
-        binding.addButton.setOnClickListener {
-            val customView = layoutInflater.inflate(R.layout.inputdialog1, null)
-
-            val note =
-                customView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.datePickerd)
-            val amount =
-                customView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.editTextTotalAmount)
-
-            context?.let { it1 ->
-                val d = MaterialAlertDialogBuilder(it1)
-                    .setView(customView)
-                    .setPositiveButton("Accept", null)
-                    .setNegativeButton("Cancel", null)
-
-                val dd = d.create()
-                dd.show()
-                dd.window?.setBackgroundDrawableResource(android.R.color.white)
-
-                val pButton = dd.getButton(DialogInterface.BUTTON_POSITIVE)
-                pButton.setOnClickListener {
-                    // Respond to positive button press
-                    if (amount.text!!.isEmpty()) {
-                        amount.error = "amount is empty"
-                    } else {
-                        //Add the amount to the list and recycler view
-                        amountTextList.add(note.text.toString())
-                        list.add("+" + amount.text.toString())
-                        totalAmount += amount.text.toString().toInt()
-                        Log.d("amountText",totalAmount.toString()+"whenAddButtonClicked")
-                        binding.amount.text = totalAmount.toString()
-                        binding.recyclerViewRP.adapter!!.notifyItemInserted(list.size - 1)
-                        check()
-                        dd.dismiss()
-                    }
-                }
-                val nButton = dd.getButton(DialogInterface.BUTTON_NEGATIVE)
-                nButton.setTextColor(resources.getColor(R.color.Red))
-                nButton.setOnClickListener {
-                    dd.dismiss()
-                }
-
-            }
-
-        }
-
-
-        binding.subbtractButton.setOnClickListener {
-            val customView = layoutInflater.inflate(R.layout.inputdialog1, null)
-
-            val note =
-                customView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.datePickerd)
-            val amount =
-                customView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.editTextTotalAmount)
-            context?.let { it1 ->
-                val d = MaterialAlertDialogBuilder(it1)
-                    .setView(customView)
-                    .setPositiveButton("Accept", null)
-                    .setNegativeButton("Cancel", null)
-
-                // Respond to positive button press
-
-                val dd = d.create()
-                dd.show()
-                dd.window?.setBackgroundDrawableResource(android.R.color.white)
-
-
-                val pButton: Button = dd.getButton(DialogInterface.BUTTON_POSITIVE)
-                pButton.setOnClickListener {
-                    if (amount.text!!.isEmpty()) {
-                        amount.error = "amount is empty"
-                    } else if (totalAmount < amount.text!!.toString().toInt()) {
-//                        AndroidUtils().SneakerError(binding.root, "Entered amount too large")
-                        Toast.makeText(
-                            requireContext(),
-                            "Entered amount too large",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        //Add the amount to the list and recycler view
-                        amountTextList.add(note.text.toString())
-                        list.add("-" + amount.text.toString())
-                        totalAmount -= amount.text.toString().toInt()
-                        Log.d("amountText",totalAmount.toString()+"When SubButtonClicked")
-                        binding.amount.text = totalAmount.toString()
-                        binding.recyclerViewRP.adapter!!.notifyItemInserted(list.size - 1)
-                        check()
-                        dd.dismiss()
-                    }
-                }
-
-                val nButton = dd.getButton(DialogInterface.BUTTON_NEGATIVE)
-                nButton.setTextColor(resources.getColor(R.color.Red))
-                nButton.setOnClickListener {
-                    dd.dismiss()
-                }
-
-            }
-        }
-
-
-        // Edit button click listener
-        binding.editBill.setOnClickListener {
-            toggleEditMode(true)
-        }
-
-        //Delete The Bill
-        binding.deleteBill.setOnClickListener {
-            val d = pdfFinalData1.date.toString()
-            if (d.isNotEmpty()) {
-                pdfFinalDataViewModel.deletePdfFinalData(pdfFinalData1)
-                findNavController().popBackStack()
-            } else {
-                Toast.makeText(requireContext(), "Please Try Again", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        binding.topAppBar.setNavigationOnClickListener {
-            toggleEditMode2()
-        }
-
-        binding.viewPdf.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.Main) {
-                PDFBoxResourceLoader.init(requireContext())
-                val fileName = PdfGenerationClass001().createPdfFromView(
-                    pdfData = pdfData1,
-                    binding.root.context,
-                    list,
-                    totalAmount,
-                    shop,
-                    nextNumber,
-                    amountTextList
-                )
-                val bundle = Bundle()
-                bundle.putString("fileName", fileName.toString())
-                if (fileName.toString().isNotEmpty()) {
-                    withContext(Dispatchers.Main) {
-                        findNavController().navigate(
-                            R.id.action_listBillView_to_viewBill,
-                            bundle
-                        )
-                    }
-                }
-            }
-        }
-
-
-        binding.topAppBar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.callButton -> {
-                    val number = number
-                    if(number!=0L){
-                        val call = Uri.parse("tel:$number")
-                        val surf = Intent(Intent.ACTION_DIAL, call)
-                        startActivity(surf)
-                    }else{
-                        Toast.makeText(requireContext(),"Try Again", Toast.LENGTH_SHORT).show()
-                    }
-
-                    true
-                }
-
-                R.id.buttonSubmit -> {
-                    //hide the add and sub button , and show the three edit delete and view button also hide the close and save button , then save the save the list
-                    //first lets save the list
-                    Log.d("amountText",totalAmount.toString()+"InSubmutButton")
-                    val data = PdfFinalData(
-                        id,
-                        fileName = pdfData1.fileName,
-                        pdfData1.name,
-                        pdfData1.address,
-                        pdfData1.phone,
-                        pdfData1.date,
-                        totalAmount,
-                        pdfData1.descriptionList,
-                        pdfData1.grWtList,
-                        pdfData1.ntWtList,
-                        pdfData1.makingChargeList,
-                        pdfData1.stoneValueList,
-                        pdfData1.goldPriceList,
-                        pdfData1.totalList,
-                        pdfData1.pcsList,
-                        pdfData1.karatList,
-                        list,
-                        pdfData1.listOfWastage,
-                        amountTextList
-                    )
-                    pdfFinalDataViewModel.updatePdfFinalData(data)
-
-                    //then lets hide and show the buttons
-                    toggleEditMode2()
-
-                    true
-                }
-                else -> false
-            }
-        }
-
-        // Inflate the layout for this fragment
         return binding.root
     }
 
-    private fun setUpRecyclerView() {
-        adapter1 = ItemsAdapter(amountTextList,
-            list, editItemClickListener = { position ->
-                //Delete the item from the list
-                deleteItem(position)
-            })
-        val mLayoutManager = LinearLayoutManager(binding.root.context)
-        binding.recyclerViewRP.adapter = adapter1
-        binding.recyclerViewRP.layoutManager = mLayoutManager
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
+        setUpRecyclerView()
+        initializeBillData()
+        setupClickListeners()
+        observeChanges()
+        getTheShop()
+        createFileFromBill()
+
     }
 
-    private fun deleteItem(position: Int) {
-        if (position in 0 until list.size) {
-            if (list[position].contains('+')) {
-//                val amount = list[position].substring()
+    private fun getTheShop() {
+        shopViewModel.shop.observe(viewLifecycleOwner) {
+            shop = it
+        }
+    }
 
-                // Define the regular expression pattern
-                val regex = Regex("""\+(\d+)""")
+//    private fun createFileFromBill() {
+//        val billId = arguments?.getInt(ARG_BILL_ID) ?: return
+//
+//        billInputViewModel.getBillInputsById(billId).observe(viewLifecycleOwner) { billData ->
+//            billData?.let { bill ->
+//                val sanitizedFileName =
+//                    "${bill.customerName.trim().replace("[^a-zA-Z0-9]", "_")}_${bill.invoiceNumber}"
+//
+//                lifecycleScope.launch {
+//                    try {
+//                        PDFBoxResourceLoader.init(binding.root.context)
+//
+//                        val f = PdfGenerationClass001().createPdfFromView(
+//                            requireContext(),
+//                            bill,
+//                            shop,
+//                            sanitizedFileName
+//                        )
+//
+//                        file = f
+//                    } catch (e: Exception) {
+//                        Log.e("PDF_ERROR", "Error generating PDF", e)
+//                        Toast.makeText(
+//                            requireContext(),
+//                            "Failed to generate PDF",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//                }
+//            } ?: run {
+//                Log.e("BILL_ERROR", "Bill data is null")
+//                Toast.makeText(requireContext(), "Bill not found", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
 
-                // Find the match in the input string
-                val matchResult = regex.find(list[position])
+    private fun createFileFromBill() {
+        val billId = arguments?.getInt(ARG_BILL_ID) ?: return
 
-                // Extract the digits after the '+'
-                val digitsAfterPlus = matchResult?.groupValues?.get(1)
-                totalAmount -= digitsAfterPlus!!.toInt()
+        // Observe bill data once
+        billInputViewModel.getBillInputsById(billId).observe(viewLifecycleOwner) { billData ->
+            currentBill = billData
+            generatePdfFile(billData)
 
-                list.removeAt(position)
-                amountTextList.removeAt(position)
+//            if (file == null) { // Only generate if not already generated
+//            }
+        }
+    }
 
-                binding.amount.text = totalAmount.toString()
-                adapter1.notifyItemRemoved(position)
-                adapter1.notifyItemRangeChanged(position, list.size - position)
-            } else if (list[position].contains('-')) {
-                // Define the regular expression pattern
-                val regex = Regex("""-(\d+)""")
+    private fun generatePdfFile(billData: BillInputs?) {
+        billData?.let { bill ->
+            val sanitizedFileName =
+                "${bill.customerName.trim().replace("[^a-zA-Z0-9]", "_")}_${bill.invoiceNumber}"
 
-                // Find the match in the input string
-                val matchResult = regex.find(list[position])
+            binding.spinner.visibility = View.VISIBLE // Show loading
 
-                // Extract the digits after the '+'
-                val digitsAfterPlus = matchResult?.groupValues?.get(1)
-                totalAmount += digitsAfterPlus!!.toInt()
-                list.removeAt(position)
-                amountTextList.removeAt(position)
-                binding.amount.text = totalAmount.toString()
-                adapter1.notifyItemRemoved(position)
-                adapter1.notifyItemRangeChanged(position, list.size - position)
-            } else {
-                Toast.makeText(requireContext(), "Something is wrong", Toast.LENGTH_SHORT).show()
-//                AndroidUtils().Toast(, binding.root.context)
+            viewLifecycleOwner.lifecycleScope.launch {
+                try {
+                    PDFBoxResourceLoader.init(binding.root.context)
+                    file = PdfGenerationClass001().createPdfFromView(
+                        requireContext(),
+                        bill,
+                        shop,
+                        sanitizedFileName
+                    )
+                    binding.spinner.visibility = View.GONE // Hide loading
+                    binding.spinner2.visibility = View.GONE // Hide loading
+
+                } catch (e: Exception) {
+                    binding.spinner.visibility = View.GONE // Hide loading
+                    binding.spinner2.visibility = View.GONE // Hide loading
+
+                    Log.e("PDF_ERROR", "Error generating PDF", e)
+                    Toast.makeText(
+                        requireContext(),
+                        "Failed to generate PDF",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        } ?: run {
+            Log.e("BILL_ERROR", "Bill data is null")
+            Toast.makeText(requireContext(), "Bill not found", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    private fun observeChanges() {
+        jewelryViewModel.items.observe(viewLifecycleOwner) { items ->
+            adapterForItems.submitList(items)
+            updateItemsVisibility(items.isNotEmpty())
+        }
+
+        sharedViewModel.paymentEntry.observe(viewLifecycleOwner) { paymentEntry ->
+            adapterForPayment.submitList(paymentEntry)
+            updatePaymentsVisibility(paymentEntry.isNotEmpty())
+        }
+
+        jewelryViewModel.hasChanges.observe(viewLifecycleOwner) {
+            updateUpdateButtonVisibility()
+        }
+
+        sharedViewModel.hasChangesPayments.observe(viewLifecycleOwner) {
+            updateUpdateButtonVisibility()
+        }
+    }
+
+    private fun updateUpdateButtonVisibility() {
+        val shouldShowUpdateButton = jewelryViewModel.hasChanges.value == true ||
+                sharedViewModel.hasChangesPayments.value == true
+        binding.btnUpdateBill.visibility = if (shouldShowUpdateButton) View.VISIBLE else View.GONE
+    }
+
+    private fun initializeBillData() {
+        val billId = arguments?.getInt(ARG_BILL_ID) ?: run {
+            showError("No bill ID provided")
+            findNavController().navigateUp()
+            return
+        }
+
+        if (!jewelryViewModel.hasChanges.value!!) {
+            billInputViewModel.getBillInputsById(billId).observe(viewLifecycleOwner) { bill ->
+                bill?.let {
+                    jewelryViewModel.initializeItemList(it.itemList)
+                    updateBillDetails(it)
+                } ?: showError("Bill not found")
             }
         }
 
-
-        //How to delete the item or how to check if the item is positive or negative
-    }
-
-    fun check() {
-        val amount = totalAmount
-        if (amount > 0) {
-            binding.colourPaidDue.setBackgroundColor(
-                ContextCompat.getColor(
-                    binding.root.context,
-                    R.color.AWTYellow
-                )
-            )
-            binding.colourPaidDue.text = "Pending"
-
-        } else if (amount <= 0) {
-            binding.colourPaidDue.setBackgroundColor(
-                ContextCompat.getColor(
-                    binding.root.context,
-                    R.color.Green
-                )
-            )
-            binding.colourPaidDue.text = "Paid"
+        if (!sharedViewModel.hasChangesPayments.value!!) {
+            billInputViewModel.getBillInputsById(billId).observe(viewLifecycleOwner) { bill ->
+                bill?.let {
+                    sharedViewModel.initializePaymentList(it.paymentList)
+                    updateBillDetails(it)
+                }
+            }
         }
     }
 
-    private fun toggleEditMode(isEditing: Boolean) {
-        if (isEditing) {
-            // Hide the delete button and show add/subtract buttons
-            binding.editBill.visibility = View.INVISIBLE
-            binding.deleteBill.visibility = View.INVISIBLE
-            binding.addButton.visibility = View.VISIBLE
-            binding.subbtractButton.visibility = View.VISIBLE
-            binding.viewPdf.visibility = View.INVISIBLE
-            binding.recyclerViewRP.visibility = View.VISIBLE
+    private fun updateBillDetails(bill: BillInputs) {
+        phoneNumber = bill.customerNumber
+        binding.apply {
+            tvCustomerName.text = bill.customerName
+            tvCustomerNumber.text = bill.customerNumber
+            tvAddress.text = bill.customerAddress
+            tvInvoiceNumber.text = "#${bill.invoiceNumber}"
+            tvBillingDate.text = bill.date
 
-            // Change toolbar icon to save button and hide the toolbar title
-            binding.topAppBar.menu.findItem(R.id.buttonSubmit).isVisible = true
-            binding.topAppBar.menu.findItem(R.id.callButton).isVisible = false
-            binding.topAppBar.title = ""
 
-            // Set Nevigation Icon
-            binding.topAppBar.setNavigationIcon(R.drawable.baseline_close_24)
-            binding.topAppBar.setNavigationIconTint(resources.getColor(R.color.redForSub))
+            when (bill.status) {
+                "Pending" -> {
+                    chipBillingStatus.text = "Pending"
+                    chipBillingStatus.setChipBackgroundColorResource(R.color.Red)
+                }
 
-            // Start a transition animation
-            val transition = android.transition.TransitionSet()
-            transition.addTransition(android.transition.Fade())
-            transition.duration = 300
-            android.transition.TransitionManager.beginDelayedTransition(binding.root, transition)
+                "Paid" -> {
+                    chipBillingStatus.text = "Paid"
+                    chipBillingStatus.setChipBackgroundColorResource(R.color.status_completed)
+                }
+
+                "Partially Paid" -> {
+                    chipBillingStatus.text = "Partially Paid"
+                    chipBillingStatus.setChipBackgroundColorResource(R.color.status_pending)
+                }
+            }
+
+
         }
     }
 
-    private fun toggleEditMode2() {
-        // Hide the delete button and show add/subtract buttons
-        binding.editBill.visibility = View.VISIBLE
-        binding.deleteBill.visibility = View.VISIBLE
-        binding.addButton.visibility = View.INVISIBLE
-        binding.subbtractButton.visibility = View.INVISIBLE
-        binding.viewPdf.visibility = View.VISIBLE
-        binding.recyclerViewRP.visibility = View.INVISIBLE
+    private fun setUpRecyclerView() {
+        adapterForItems = ExpandableAdapter_Display { item ->
+            navigateToNewBill(item)
+        }
 
-        // Change toolbar icon to save button and hide the toolbar title
-        binding.topAppBar.menu.findItem(R.id.buttonSubmit).isVisible = false
-        binding.topAppBar.menu.findItem(R.id.callButton).isVisible = true
-        binding.topAppBar.title = "Invoice Detail"
+        adapterForPayment = ReceviedPaymentAdapter_Display { payment ->
+            navigateToPaymentEntry()
+        }
 
-        // Set Nevigation Icon
-        binding.topAppBar.navigationIcon = null
+        binding.apply {
+            rvBillItems.apply {
+                // Add layout animation when the list first loads
+                layoutAnimation = LayoutAnimationController(
+                    AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left)
+                ).apply {
+                    delay = 0.15f
+                    order = LayoutAnimationController.ORDER_NORMAL
+                }
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = adapterForItems
+            }
 
-        // Start a transition animation
-        val transition = android.transition.TransitionSet()
-        transition.addTransition(android.transition.Fade())
-        transition.duration = 300
-        android.transition.TransitionManager.beginDelayedTransition(binding.root, transition)
+            rvPayments.apply {
+                // Add layout animation when the list first loads
+                layoutAnimation = LayoutAnimationController(
+                    AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left)
+                ).apply {
+                    delay = 0.15f
+                    order = LayoutAnimationController.ORDER_NORMAL
+                }
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = adapterForPayment
+            }
+        }
+    }
+
+    private fun setupClickListeners() {
+        binding.apply {
+            btnAddBillItem.setOnClickListener {
+                navigateToNewBill(null)
+            }
+
+            btnPayment.setOnClickListener {
+                navigateToPaymentEntry()
+            }
+
+            btnUpdateBill.setOnClickListener {
+                updateBill()
+            }
+            // Set toolbar menu item click listener
+            topAppBar.setOnMenuItemClickListener { item: MenuItem ->
+                when (item.itemId) {
+                    R.id.buttonCall -> {
+                        callPhoneNumber(phoneNumber) // Replace with a dynamic phone number
+                        true
+                    }
+
+                    R.id.buttonOpenPdf -> {
+                        openPdfFromFileName()
+//                        openPdf("file://path_to_your_pdf") // Replace with the actual PDF path
+                        true
+                    }
+
+                    R.id.buttonPrintPdf -> {
+                        printFile(requireContext(), file.toString())
+                        true
+                    }
+
+
+                    R.id.buttonSharePdf -> {
+                        sharePdfFromPath(file)
+                        true
+                    }
+
+                    R.id.buttonShareWhatsApp -> {
+                        shareFileToWhatsApp(file)
+                        true
+                    }
+
+                    R.id.buttonPaid -> {
+
+                        val billId = arguments?.getInt("billId")
+                        val bill = billInputViewModel.getBillInputsById(billId!!)
+
+                        bill.observe(viewLifecycleOwner) {
+                            val paymentReceived = PaymentRecived(
+                                amount = it!!.dueAmount,
+                                type = RecivedPaymentType.RECEIVED,
+                                date = formattedDate.toString(),
+                                paymentMethod = PaymentMethod.LATE_PAYMENT,
+                            )
+                            val paymentList: MutableList<PaymentRecived> =
+                                it.paymentList.toMutableList()
+                            paymentList.add(paymentReceived)
+
+                            val newRecivedAmount = it.receviedAmount + it.dueAmount
+
+                            val newBill = it.copy(
+                                paymentList = paymentList,
+                                dueAmount = 0,
+                                receviedAmount = newRecivedAmount,
+                                status = "Paid"
+
+                            )
+                            billInputViewModel.updateBillInputs(newBill)
+                            findNavController().popBackStack()
+
+                        }
+
+
+
+                        true
+                    }
+
+//                    R.id.buttonSendSms -> {
+//                        val billId = arguments?.getInt("billId")
+//                        billInputViewModel.getBillInputsById(billId!!).observe(viewLifecycleOwner) {
+//                            sendSMS(
+//                                it!!.customerNumber,
+//                                " Dear ${it.customerNumber}, your outstanding bill of ${it.dueAmount} is due. Kindly make the payment at your earliest convenience. Please ignore if already paid. Contact us at [Your Contact] for any queries. Thank you."
+//                            )
+//                        }
+//                        true
+//                    }
+
+
+                    R.id.buttonSavePdf -> {
+                        val success = saveFile(file)
+                        if (success) {
+                            // File saved successfully
+                            Toast.makeText(context, "File saved successfully", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            // Handle error
+                            Toast.makeText(context, "Failed to save file", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                        true
+                    }
+
+
+                    R.id.buttonDeleteInvoice -> {
+                        val billId = arguments?.getInt(ARG_BILL_ID)
+                        billInputViewModel.deleteBillInputsById(billId = billId!!)
+                        findNavController().popBackStack()
+
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }
+    }
+
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.all { it.value }
+
+        if (!allGranted) {
+            Toast.makeText(requireContext(), "Some permissions were denied!", Toast.LENGTH_SHORT)
+                .show()
+        }
+
+        // Handle file operation if permission was granted
+        if (allGranted && pendingFile != null) {
+            lifecycleScope.launch {
+                processSaveFile(pendingFile!!, pendingFileName)
+            }
+            pendingFile = null
+            pendingFileName = null
+        }
+    }
+
+
+//    private val requestPermissionLauncher =
+//        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+//            if (!isGranted) {
+//                Toast.makeText(requireContext(), "SMS permission denied!", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//
+//
+//
+//    // Register permission launcher
+//    private val requestPermissionLauncher = registerForActivityResult(
+//        ActivityResultContracts.RequestMultiplePermissions()
+//    ) { permissions ->
+//        val allGranted = permissions.entries.all { it.value }
+//        if (allGranted) {
+//            pendingFile?.let { file ->
+//                lifecycleScope.launch {
+//                    processSaveFile(file, pendingFileName)
+//                }
+//            }
+//        }
+//        // Reset pending operations
+//        pendingFile = null
+//        pendingFileName = null
+//    }
+
+    // Function to save file
+    fun saveFile(sourceFile: File, newFileName: String? = null): Boolean {
+        return try {
+            if (checkAndRequestPermissions(sourceFile, newFileName)) {
+                processSaveFile(sourceFile, newFileName)
+                true
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    // Check and request storage permissions
+    private fun checkAndRequestPermissions(sourceFile: File, newFileName: String?): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            true // Android 10 and above use scoped storage
+        } else {
+            val writePermission = ContextCompat.checkSelfPermission(
+                requireContext(),
+                WRITE_EXTERNAL_STORAGE
+            )
+
+            if (writePermission != PackageManager.PERMISSION_GRANTED) {
+                // Store pending operation
+                pendingFile = sourceFile
+                pendingFileName = newFileName
+
+                // Request permissions
+                requestPermissionLauncher.launch(
+                    arrayOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE)
+                )
+                false
+            } else {
+                true
+            }
+        }
+    }
+
+    // Process file saving
+    private fun processSaveFile(sourceFile: File, newFileName: String?): Boolean {
+        val fileName = newFileName ?: sourceFile.name
+        val destinationFile = createFile(fileName)
+        return try {
+            copyFile(sourceFile, destinationFile)
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    // Create file in downloads directory
+    private fun createFile(fileName: String): File {
+        val downloadsDir =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        if (!downloadsDir.exists()) {
+            downloadsDir.mkdirs()
+        }
+        return File(downloadsDir, fileName)
+    }
+
+    // Copy file content
+    private fun copyFile(sourceFile: File, destinationFile: File) {
+        FileInputStream(sourceFile).use { input ->
+            FileOutputStream(destinationFile).use { output ->
+                val buffer = ByteArray(4 * 1024) // 4KB buffer
+                var read: Int
+                while (input.read(buffer).also { read = it } != -1) {
+                    output.write(buffer, 0, read)
+                }
+                output.flush()
+            }
+        }
+    }
+
+
+    fun shareFileToWhatsApp(file: File) {
+        val uri: Uri =
+            FileProvider.getUriForFile(requireContext(), "com.Gst.pdfs.fileprovider", file)
+
+        val whatsappIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "application/pdf" // Adjust based on file type
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        val packageManager = requireContext().packageManager
+        val resolveInfoList = packageManager.queryIntentActivities(whatsappIntent, 0)
+        val targetedShareIntents = mutableListOf<Intent>()
+
+        for (resolveInfo in resolveInfoList) {
+            val packageName = resolveInfo.activityInfo.packageName
+            if (packageName == "com.whatsapp" || packageName == "com.whatsapp.w4b") {
+                val targetedIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "application/pdf"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    `package` = packageName
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                targetedShareIntents.add(targetedIntent)
+            }
+        }
+
+        if (targetedShareIntents.isNotEmpty()) {
+            val chooserIntent =
+                Intent.createChooser(targetedShareIntents.removeAt(0), "Share file with")
+            chooserIntent.putExtra(
+                Intent.EXTRA_INITIAL_INTENTS,
+                targetedShareIntents.toTypedArray()
+            )
+            startActivity(chooserIntent)
+        } else {
+            // Handle case when neither WhatsApp nor WhatsApp Business is installed
+            Toast.makeText(requireContext(), "WhatsApp not installed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    private fun sharePdfFromPath(f: File) {
+
+        if (f.exists()) {
+            // Create an intent to share the PDF file
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.type = "application/pdf"
+
+            // Use a FileProvider to get a content URI for the file
+            val pdfUri = FileProvider.getUriForFile(
+                binding.root.context,
+                "com.Gst.pdfs.fileprovider", // Replace with your app's package name
+                f.absoluteFile
+            )
+
+            // Set the URI as the data to be shared
+            shareIntent.putExtra(Intent.EXTRA_STREAM, pdfUri)
+
+            // Add a subject for the shared content (optional)
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Sharing PDF")
+
+
+            // Start an activity to show the sharing options
+            startActivity(Intent.createChooser(shareIntent, "Share PDF"))
+
+        } else {
+            // Handle the case where the PDF file doesn't exist
+            Toast.makeText(binding.root.context, "PDF file not found", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun printFile(context: Context, filePath: String) {
+        val printManager = context.getSystemService(Context.PRINT_SERVICE) as PrintManager
+
+        val jobName = "PrintJob"
+        val printAdapter = viewBill.WebViewPrintAdapter(context, filePath)
+
+        printManager.print(jobName, printAdapter, null)
+    }
+
+
+    private fun openPdfFromFileName() {
+        val bundle = Bundle()
+        bundle.putString("file", file.toString())
+        Log.d("file", "file $file")
+        if (file.toString().isNotEmpty()) {
+            findNavController().navigate(
+                R.id.action_listBillView_to_viewBill,
+                bundle
+            )
+        }
+    }
+
+    private fun callPhoneNumber(phoneNumber: String) {
+        val callIntent = Intent(Intent.ACTION_DIAL).apply {
+            data = Uri.parse("tel:$phoneNumber")
+        }
+        startActivity(callIntent)
+    }
+
+
+    private fun updateBill() {
+        val billId = arguments?.getInt(ARG_BILL_ID) ?: run {
+            showError("No bill ID provided")
+            return
+        }
+
+        billInputViewModel.getBillInputsById(billId).observe(viewLifecycleOwner) { currentBill ->
+            currentBill?.let { bill ->
+                val totalAmount = calculateTotalAmount()
+                val (receivedAmount, extraCharges) = calculatePaymentTotals()
+                val finalTotalAmount = totalAmount + extraCharges
+                val dueAmount = finalTotalAmount - receivedAmount
+
+                var status = "Pending"
+
+
+                if (dueAmount > 0 && receivedAmount == 0) {
+                    status = "Pending"
+                } else if (dueAmount == 0) {
+                    status = "Paid"
+                } else if (receivedAmount > 0 && dueAmount > 0) {
+                    status = "Partially Paid"
+                }
+
+                val updatedBill = bill.copy(
+                    itemList = jewelryViewModel.items.value ?: emptyList(),
+                    paymentList = sharedViewModel.paymentEntry.value ?: emptyList(),
+                    totalAmount = totalAmount,
+                    receviedAmount = receivedAmount,
+                    dueAmount = dueAmount,
+                    status = status
+                )
+
+                billInputViewModel.updateBillInputs(updatedBill)
+                jewelryViewModel.resetChanges()
+                sharedViewModel.clearRevivedPayments()
+
+                findNavController().navigate(R.id.action_listBillView_to_mainScreen)
+            } ?: showError("Bill not found")
+        }
+    }
+
+    private fun calculatePaymentTotals(): Pair<Int, Int> {
+        var receivedAmount = 0
+        var extraCharges = 0
+
+        sharedViewModel.paymentEntry.value?.forEach { payment ->
+            when (payment.type) {
+                RecivedPaymentType.RECEIVED -> receivedAmount += payment.amount
+                RecivedPaymentType.EXTRA_CHARGE -> extraCharges += payment.amount
+                else -> {}
+            }
+        }
+
+        return Pair(receivedAmount, extraCharges)
+    }
+
+    private fun navigateToNewBill(item: ItemModel?) {
+        findNavController().navigate(
+            R.id.action_listBillView_to_newBill,
+            Bundle().apply {
+                putBoolean(ARG_EDIT_BILL, true)
+            }
+        )
+    }
+
+    private fun navigateToPaymentEntry() {
+        val totalAmount = calculateTotalAmount()
+        if (totalAmount > 0) {
+            findNavController().navigate(
+                R.id.action_listBillView_to_paymentEntry,
+                Bundle().apply {
+                    putBoolean(ARG_EDIT_PAYMENT, true)
+                    putInt(ARG_TOTAL_AMOUNT, totalAmount)
+                }
+            )
+        } else {
+            showError("Total amount must be greater than 0")
+        }
+    }
+
+    private fun updateItemsVisibility(hasItems: Boolean) {
+        binding.apply {
+            rvBillItems.visibility = if (hasItems) View.VISIBLE else View.GONE
+            tvBillItemsHeader.visibility = if (hasItems) View.VISIBLE else View.GONE
+            btnAddBillItem.visibility = if (hasItems) View.GONE else View.VISIBLE
+        }
+    }
+
+    private fun updatePaymentsVisibility(hasPayments: Boolean) {
+        binding.apply {
+            rvPayments.visibility = if (hasPayments) View.VISIBLE else View.GONE
+            tvPaymentsHeader.visibility = if (hasPayments) View.VISIBLE else View.GONE
+            btnPayment.visibility = if (hasPayments) View.GONE else View.VISIBLE
+        }
+    }
+
+    private fun calculateTotalAmount(): Int {
+
+        //total amount should
+
+        return jewelryViewModel.items.value?.sumOf { it.totalValue.toInt() } ?: 0
+    }
+
+    private fun showError(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+        Log.e("ListBillViewFragment", message)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
 
 }

@@ -11,11 +11,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.goldinvoice0.billingsoftware.Adapter.HomePagerAdapter
-import com.goldinvoice0.billingsoftware.Adapter.PdfDataAdapter
-import com.goldinvoice0.billingsoftware.Model.PdfFinalData
+//import com.goldinvoice0.billingsoftware.Adapter.PdfDataAdapter
 import com.goldinvoice0.billingsoftware.Model.Shop
-import com.goldinvoice0.billingsoftware.ViewModel.PdfFinalDataViewModel
 import com.goldinvoice0.billingsoftware.ViewModel.SearchViewModel
+import com.goldinvoice0.billingsoftware.ViewModel.SharedNavigationViewModel
 import com.goldinvoice0.billingsoftware.ViewModel.ShopViewModel
 import com.goldinvoice0.billingsoftware.databinding.FragmentBillsBinding
 import com.google.android.material.tabs.TabLayoutMediator
@@ -26,11 +25,10 @@ class Bills : Fragment() {
     private var _binding: FragmentBillsBinding? = null
     private val binding get() = _binding!!
     private val shopViewModel: ShopViewModel by viewModels()
-    private val pdfFinalDataViewModel: PdfFinalDataViewModel by viewModels()
-    private lateinit var pdfDataAdapter: PdfDataAdapter
+//    private lateinit var pdfDataAdapter: PdfDataAdapter
     private val sharedViewModel: SharedViewModel by activityViewModels()
-    private var originalList: List<PdfFinalData> = emptyList()
     val searchViewModel: SearchViewModel by activityViewModels()
+    private val vm: SharedNavigationViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,11 +60,21 @@ class Bills : Fragment() {
             }
         }.attach()
 
+
+
+
+
         // Inflate the layout for this fragment
         return binding.root
     }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.viewPager.adapter = HomePagerAdapter(this)
 
-
+        vm.requestedTab.observe(viewLifecycleOwner) { position ->
+            binding.viewPager.setCurrentItem(position, false)
+        }
+    }
+    // Function to switch ViewPager2 tab to Orders
     private fun setupToolbar() {
         // Enable options menu in fragment
         setHasOptionsMenu(true)

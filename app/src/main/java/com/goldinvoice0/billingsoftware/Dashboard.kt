@@ -17,8 +17,8 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
-import com.goldinvoice0.billingsoftware.Model.PdfFinalData
-import com.goldinvoice0.billingsoftware.ViewModel.PdfFinalDataViewModel
+import com.goldinvoice0.billingsoftware.Model.BillInputs
+import com.goldinvoice0.billingsoftware.ViewModel.BillInputViewModel
 import com.goldinvoice0.billingsoftware.databinding.FragmentDashboardBinding
 
 
@@ -27,7 +27,7 @@ class Dashboard : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
-    private val pdfFinalDataViewModel: PdfFinalDataViewModel by viewModels()
+    private val billDataViewModel: BillInputViewModel by viewModels()
     var totalNtWt: Double = 0.0
     var totalAmount: Int = 0
     var totalPcs: Int = 0
@@ -38,35 +38,37 @@ class Dashboard : Fragment() {
     ): View {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
 
-        pdfFinalDataViewModel.getAllPdfFinalData {
-            val s: List<PdfFinalData> = it
+        billDataViewModel.getAllBillInput().observe(viewLifecycleOwner) {
+            val s: List<BillInputs> = it
+
+
 
 
             // Calculate the sum of all ntWtList values
-            totalNtWt = s.flatMap { pdf ->
-                pdf.ntWtList.mapNotNull { ntWt ->
-                    ntWt.toDoubleOrNull() // Convert to Double, ignoring invalid entries
+            totalNtWt = s.flatMap {
+                it.itemList.mapNotNull {
+                    it.netWeight.toDouble()
                 }
             }.sum()
             val totalNtWtText = String.format("%.2f", totalNtWt) + " grams"
             binding.totalGoldWeight.text = totalNtWtText
             // Calculate the sum of all totalList values
-            totalAmount = s.flatMap { pdf ->
-                pdf.totalList.mapNotNull { total ->
-                    total.toIntOrNull() // Convert to Double, ignoring invalid entries
+            totalAmount = s.flatMap {
+                it.itemList.mapNotNull {
+                    it.totalValue // Convert to Double, ignoring invalid entries
                 }
-            }.sum()
+            }.sum().toInt()
             binding.totalAnnualSales.text = "₹$totalAmount"
-            totalPcs = s.flatMap { pdf ->
-                pdf.pcsList.mapNotNull { total ->
-                    total.toIntOrNull() // Convert to Double, ignoring invalid entries
+            totalPcs = s.flatMap {
+                it.itemList.mapNotNull {
+                    it.piece // Convert to Double, ignoring invalid entries
                 }
             }.sum()
             binding.totalItemsSold.text = "$totalPcs pieces"
             // Calculate the average of goldPriceList values
-            val goldPrices = s.flatMap { pdf ->
-                pdf.goldPriceList.mapNotNull { goldPrice ->
-                    goldPrice.toDoubleOrNull() // Convert to Double, ignoring invalid entries
+            val goldPrices = s.flatMap {
+                it.itemList.mapNotNull {
+                    it.rateOfJewellery // Convert to Double, ignoring invalid entries
                 }
             }
 
@@ -85,33 +87,17 @@ class Dashboard : Fragment() {
 
         }
 
-        // Inflate the layout for this fragment
+//         Inflate the layout for this fragment
         return binding.root
     }
 
-    private fun setupPieChart(data: List<PdfFinalData>) {
-        // Calculate total received amount using regex to extract numbers
-        val totalReceived = data.flatMap { pdf ->
-            pdf.receivedList.mapNotNull { received ->
-                try {
-                    // Extract only numeric value (including minus sign if present)
-                    val numericValue = Regex("-?\\d+").find(received)?.value
+    private fun setupPieChart(data: List<BillInputs>) {
+        // Calculate total received amount
 
-                    // Convert to positive integer if found, null otherwise
-                    val amount = numericValue?.replace("-", "")?.toIntOrNull()
-
-                    Log.d(
-                        "ReceivedDebug",
-                        "Original: $received, Extracted: $numericValue, Final: $amount"
-                    )
-
-                    amount
-                } catch (e: Exception) {
-                    Log.e("ReceivedDebug", "Error processing value '$received': ${e.message}")
-                    null
-                }
-            }
+        val totalReceived : Int = data.map {
+            it.receviedAmount
         }.sum()
+
 
         Log.d("ReceivedDebug", "Total Received: $totalReceived")
 
@@ -147,10 +133,12 @@ class Dashboard : Fragment() {
         }
     }
 
-    private fun setupBarChart(data: List<PdfFinalData>) {
+    private fun setupBarChart(data: List<BillInputs>) {
         // Get description counts
-        val descriptionCounts = data.flatMap { pdf ->
-            pdf.descriptionList
+        val descriptionCounts = data.flatMap {
+            it.itemList.map {
+                it.name
+            }
         }.groupingBy { it }.eachCount()
 
         // Create bar entries

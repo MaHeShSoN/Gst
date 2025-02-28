@@ -1,12 +1,13 @@
 package com.goldinvoice0.billingsoftware
 
+//import com.goldinvoice0.billingsoftware.Model.PdfData
 import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.util.Log
-import com.goldinvoice0.billingsoftware.Model.PdfData
+import com.goldinvoice0.billingsoftware.Model.BillInputs
 import com.goldinvoice0.billingsoftware.Model.Shop
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.common.BitMatrix
@@ -30,14 +31,36 @@ class PdfGenerationClass001 {
     lateinit var font: PDType0Font
     lateinit var font2: PDType0Font
     fun createPdfFromView(
-        pdfData: PdfData,
         context: Context,
-        list1212: MutableList<String>,
-        totalAmount1: Int,
+        bill: BillInputs,
         shop: Shop?,
-        invoiceNumber: String,
-        amountTextList: MutableList<String>,
+        fileName: String
     ): File {
+
+        val descriptionList: MutableList<String> = mutableListOf()
+        val grWtList: MutableList<Float> = mutableListOf()
+        val ntWtList: MutableList<Float> = mutableListOf()
+        val pcsList: MutableList<Int> = mutableListOf()
+        val makingChargeList: MutableList<Int> = mutableListOf()
+        val stoneValueList: MutableList<Int> = mutableListOf()
+        val karatList: MutableList<String> = mutableListOf()
+        val goldPriceList: MutableList<Int> = mutableListOf()
+        val totalList: MutableList<Long> = mutableListOf()
+
+
+        bill.itemList.forEach {
+            descriptionList.add(it.name)
+            grWtList.add(it.grossWeight)
+            ntWtList.add(it.netWeight)
+            pcsList.add(it.piece)
+            makingChargeList.add(it.finalMakingCharges)
+            stoneValueList.add(it.stoneValue)
+            karatList.add(it.karat)
+            goldPriceList.add(it.rateOfJewellery)
+            totalList.add(it.totalValue)
+        }
+
+
         val document = PDDocument()
         val page = PDPage(PDRectangle.A4)
         document.addPage(page)
@@ -62,17 +85,18 @@ class PdfGenerationClass001 {
             contentStream, "TAX INVOICE", 22f, pageWidth, pageHeight, AWTColor.BLACK
         )
 
-        val customerName = pdfData.name
-        val mobilNumber = pdfData.phone
-        val address = pdfData.address
+        val customerName = bill.customerName
+        val mobilNumber = bill.customerNumber
+        val address = bill.customerAddress
         //14f
         val shopName = shop!!.shopName
         val shopAddress = shop.address1
         val shopAddres2 = shop.address2
         val dateForPurched = "Date:"
-        val date = pdfData.date
+        val date = bill.date
         val gstText = "GSTIN :-"
         val gstNumber = shop.gstNumber
+        val invoiceNumber = bill.invoiceNumber
         val list = mutableListOf<String>(customerName, mobilNumber, address)
         val list2 = mutableListOf<String>(shopName, shopAddress, shopAddres2)
 
@@ -114,20 +138,27 @@ class PdfGenerationClass001 {
             AWTColor.BLACK
         )
 
-        val listOfPartyText = mutableListOf<String>("Party Name:","Number:","Address:")
+        val listOfPartyText = mutableListOf<String>("Party Name:", "Number:", "Address:")
 
         printList(contentStream, list, 100f, pageHeight - 60f)
         printListHeader(contentStream, listOfPartyText, 25f, pageHeight - 60f)
 
 
-        drawTextHeading(contentStream, "Owner:", pageWidth / 2 + 5f, pageHeight - 60f,12f,AWTColor.BLACK)
+        drawTextHeading(
+            contentStream,
+            "Owner:",
+            pageWidth / 2 + 5f,
+            pageHeight - 60f,
+            12f,
+            AWTColor.BLACK
+        )
         printListHeader(contentStream, list2, pageWidth / 2 + 75f, pageHeight - 60f)
 
         var yline = pageHeight - 100f
 
         //Date
         drawTextHeading(contentStream, dateForPurched, 25f, yline - 14f, 12f, AWTColor.BLACK)
-        drawText(contentStream,date,100f,yline-14f,12f, AWTColor.BLACK)
+        drawText(contentStream, date, 100f, yline - 14f, 12f, AWTColor.BLACK)
 //        drawText(contentStream, date, pageWidth / 2 + 5f, yline - 14f, 12f, AWTColor.BLACK)
         drawLine(contentStream, 20f, yline - 19f, pageWidth - 20f, yline - 19f, .5f, AWTColor.BLACK)
 
@@ -136,15 +167,22 @@ class PdfGenerationClass001 {
         val gline = yline - 15f
         drawTextHeading(contentStream, "GSTIN:", 25f, gline - 16f, 12f, AWTColor.BLACK)
         drawText(contentStream, gstNumber, 100f, gline - 16f, 12f, AWTColor.BLACK)
-        Log.d("Tag",invoiceNumber+"inPGC001")
+        Log.d("Tag", invoiceNumber + "inPGC001")
 
-        drawTextHeading(contentStream,"INV NO.:",pageWidth / 2 + 6f, gline-15f,12f, AWTColor.BLACK )
+        drawTextHeading(
+            contentStream,
+            "INV NO.:",
+            pageWidth / 2 + 6f,
+            gline - 15f,
+            12f,
+            AWTColor.BLACK
+        )
 
         drawText(
             contentStream,
             invoiceNumber,
             pageWidth / 2 + 75f,
-            gline-15f,
+            gline - 15f,
             12f,
             AWTColor.BLACK
         )
@@ -169,14 +207,16 @@ class PdfGenerationClass001 {
 
         //list of pdf inputs
         val iline = mline - 19f
-
+        bill.itemList.forEach {
+            it.name
+        }
         val listOfSN = mutableListOf<String>()
-        for (i in 1..pdfData.descriptionList.size) {
+        for (i in 1..descriptionList.size) {
             listOfSN.add(i.toString())
         }
 
         val lastMainListItemY =
-            iline - (pdfData.descriptionList.size - 1).toFloat() * 15f - 13f - 6f
+            iline - (descriptionList.size - 1).toFloat() * 15f - 13f - 6f
 
         printListHeader(contentStream, listOfSN, 26f, iline - 13f)
         drawLine(
@@ -188,7 +228,8 @@ class PdfGenerationClass001 {
             .5f,
             AWTColor.BLACK
         )
-        printList(contentStream, pdfData.descriptionList, 47f, iline - 13f)
+//        printList(contentStream, descriptionList, 47f, iline - 13f)
+        printListForDescriptionList(contentStream, descriptionList, 47f, iline - 13f)
         drawLine(
             contentStream,
             120f,
@@ -198,7 +239,7 @@ class PdfGenerationClass001 {
             .5f,
             AWTColor.BLACK
         )
-        printList(contentStream, pdfData.grWtList, 122f, iline - 13f)
+        printList(contentStream, grWtList.map { it.toString() }.toMutableList(), 122f, iline - 13f)
         drawLine(
             contentStream,
             170f,
@@ -208,7 +249,7 @@ class PdfGenerationClass001 {
             .5f,
             AWTColor.BLACK
         )
-        printList(contentStream, pdfData.ntWtList, 173f, iline - 13f)
+        printList(contentStream, ntWtList.map { it.toString() }.toMutableList(), 173f, iline - 13f)
         drawLine(
             contentStream,
             220f,
@@ -218,7 +259,7 @@ class PdfGenerationClass001 {
             .5f,
             AWTColor.BLACK
         )
-        printList(contentStream, pdfData.pcsList, 224f, iline - 13f)
+        printList(contentStream, pcsList.map { it.toString() }.toMutableList(), 224f, iline - 13f)
         drawLine(
             contentStream,
             248f,
@@ -228,7 +269,12 @@ class PdfGenerationClass001 {
             .5f,
             AWTColor.BLACK
         )
-        printList(contentStream, pdfData.makingChargeList, 250f, iline - 13f) //255 x
+        printList(
+            contentStream,
+            makingChargeList.map { it.toString() }.toMutableList(),
+            250f,
+            iline - 13f
+        ) //255 x
         drawLine(
             contentStream,
             300f,
@@ -238,7 +284,12 @@ class PdfGenerationClass001 {
             .5f,
             AWTColor.BLACK
         )
-        printList(contentStream, pdfData.stoneValueList, 304f, iline - 13f)
+        printList(
+            contentStream,
+            stoneValueList.map { it.toString() }.toMutableList(),
+            304f,
+            iline - 13f
+        )
         drawLine(
             contentStream,
             351f,
@@ -248,7 +299,7 @@ class PdfGenerationClass001 {
             .5f,
             AWTColor.BLACK
         )
-        printList(contentStream, pdfData.karatList, 357f, iline - 13f)
+        printList(contentStream, karatList, 357f, iline - 13f)
         drawLine(
             contentStream,
             397f,
@@ -258,7 +309,12 @@ class PdfGenerationClass001 {
             .5f,
             AWTColor.BLACK
         )
-        printList(contentStream, pdfData.goldPriceList, 401f, iline - 13f)
+        printList(
+            contentStream,
+            goldPriceList.map { it.toString() }.toMutableList(),
+            401f,
+            iline - 13f
+        )
         drawLine(
             contentStream,
             470f,
@@ -268,7 +324,12 @@ class PdfGenerationClass001 {
             .5f,
             AWTColor.BLACK
         )
-        printListWithIndianStyle(contentStream, pdfData.totalList, 476f, iline - 13f)
+        printListWithIndianStyle(
+            contentStream,
+            totalList.map { it.toString() }.toMutableList(),
+            476f,
+            iline - 13f
+        )
         drawLine(
             contentStream,
             20f,
@@ -283,28 +344,35 @@ class PdfGenerationClass001 {
         val tline = lastMainListItemY - 17f
 
         var totalNetValue = 0f
-        for (i in pdfData.ntWtList) {
+        for (i in ntWtList) {
             totalNetValue += i.toFloat()
         }
         var totalPcs = 0f
-        for (i in pdfData.pcsList) {
+        for (i in pcsList) {
             totalPcs += i.toFloat()
         }
         var totalLabout = 0f
-        for (i in pdfData.makingChargeList) {
+        for (i in makingChargeList) {
             totalLabout += i.toFloat()
         }
         var totalStoneValue = 0f
-        for (i in pdfData.stoneValueList) {
+        for (i in stoneValueList) {
             totalStoneValue += i.toFloat()
         }
         var totalAmountLastFinal_001 = 0L
-        for (i in pdfData.totalList) {
+        for (i in totalList) {
             totalAmountLastFinal_001 += i.toLong()
         }
         val formattedValue_0001 = String.format("%.2f", totalNetValue)
 
-        drawTextHeading(contentStream, "Net Total", 63f, lastMainListItemY - 13f, 10f, AWTColor.BLACK)
+        drawTextHeading(
+            contentStream,
+            "Net Total",
+            63f,
+            lastMainListItemY - 13f,
+            10f,
+            AWTColor.BLACK
+        )
         drawTextHeading(
             contentStream,
             formattedValue_0001,
@@ -351,11 +419,20 @@ class PdfGenerationClass001 {
         //recived and added amount list
         var rlline = tline - 17f
 
-        printListHeader(contentStream, amountTextList, 357f, rlline + 5f)
-        printListWithIndianStyle(contentStream, list1212, 476f, rlline + 5f)
+
+        // Extract headerList and amountList
+        val headerList: List<String> = bill.paymentList.map {
+            it.paymentMethod?.name ?: it.extraChargeType?.name ?: "Unknown"
+        }
+        val amountList: List<Int> = bill.paymentList.map { it.amount }
+
+
+
+        printListHeader(contentStream, headerList, 357f, rlline + 5f)
+        printListWithIndianStyle(contentStream, amountList.map { it.toString() }, 476f, rlline + 5f)
 
         val d1 = lastMainListItemY - 17f
-        val d2 = d1 - list1212.size.toFloat() * 15f
+        val d2 = d1 - amountList.size.toFloat() * 15f
 
         drawLine(contentStream, 470f, d1, 470f, d2, .5f, AWTColor.BLACK)
 
@@ -364,20 +441,34 @@ class PdfGenerationClass001 {
         drawLine(contentStream, 20f, d2, pageWidth - 20f, d2, .5f, AWTColor.BLACK)
 
         var s = ""
-        if (totalAmount1 > 0) {
+        if (bill.dueAmount > 0) {
             s = ("Due")
-        } else if (totalAmount1 == 0) {
+        } else if (bill.dueAmount == 0) {
             s = ("Cleared")
         }
 
         var latsLine = d2 - 17f
-        val indianFormatNumber = formatNumberToIndian(totalAmount1.toLong())
+        val indianFormatNumber = formatNumberToIndian(bill.dueAmount.toLong())
 
         drawTextHeading(contentStream, s, 357f, latsLine + 2f, 12f, AWTColor.BLACK)
-        drawTextHeading(contentStream, indianFormatNumber.toString(), 476f, latsLine + 2f, 12f, AWTColor.BLACK)
+        drawTextHeading(
+            contentStream,
+            indianFormatNumber.toString(),
+            476f,
+            latsLine + 2f,
+            12f,
+            AWTColor.BLACK
+        )
 
-        val numberInWords = numberToWords(totalAmount1)
-        drawTextHeading(contentStream,"In Words: "+numberInWords.toString(),25f,latsLine + 2f,12f, AWTColor.BLACK)
+        val numberInWords = numberToWords(bill.dueAmount)
+        drawTextHeading(
+            contentStream,
+            "In Words: " + numberInWords.toString(),
+            25f,
+            latsLine + 2f,
+            8f,
+            AWTColor.BLACK
+        )
 
 
         drawLine(contentStream, 351f, d2, 351f, d2 - 18f, .5f, AWTColor.BLACK)
@@ -397,11 +488,12 @@ class PdfGenerationClass001 {
 //        )
 
 
-
         drawTextHeading(contentStream, "Authorized Signature", 453.25f, 30.3f, 12f, AWTColor.BLACK)
         drawTextHeading(contentStream, "Scan to Pay", 40f, 30.3f, 12f, AWTColor.BLACK)
-        printStringInCenterFooter(contentStream, "Thank you for shopping with us!", 12f, pageWidth,
-            AWTColor.BLACK)
+        printStringInCenterFooter(
+            contentStream, "Thank you for shopping with us!", 12f, pageWidth,
+            AWTColor.BLACK
+        )
 
         drawImage2(context, contentStream, document)
 
@@ -412,14 +504,26 @@ class PdfGenerationClass001 {
 
         contentStream.close()
         // Save the PDF document
-        val file = savePdfToFile(document, pdfData.fileName, context)
+        val file = savePdfToFile(document, fileName, context)
         document.close()
         return file
 
 
     }
 
-
+    private fun printListForDescriptionList(
+        contentStream: PDPageContentStream,
+        list: MutableList<String>,
+        xPosition: Float,
+        yPosition: Float
+    ) {
+        val lineHeight = 15f // Height of each line
+        var yPosition = yPosition// Starting y-coordinate
+        for (text in list) {
+            drawText(contentStream, text, xPosition, yPosition, 8.2f, AWTColor.BLACK)
+            yPosition -= lineHeight
+        }
+    }
 
 
     @Throws(IOException::class)
@@ -461,13 +565,14 @@ class PdfGenerationClass001 {
         val lineHeight = 15f // Height of each line
         var yPosition = yPosition// Starting y-coordinate
         for (text in list) {
-            drawText(contentStream, text, xPosition, yPosition, 12f, AWTColor.BLACK)
+            drawText(contentStream, text, xPosition, yPosition, 10f, AWTColor.BLACK)
             yPosition -= lineHeight
         }
     }
+
     fun printListWithIndianStyle(
         contentStream: PDPageContentStream,
-        list: MutableList<String>,
+        list: List<String>,
         xPosition: Float,
         yPosition: Float
     ) {
@@ -479,9 +584,10 @@ class PdfGenerationClass001 {
             yPosition -= lineHeight
         }
     }
+
     fun printListHeader(
         contentStream: PDPageContentStream,
-        list: MutableList<String>,
+        list: List<String>,
         xPosition: Float,
         yPosition: Float
     ) {
@@ -523,6 +629,7 @@ class PdfGenerationClass001 {
         contentStream.showText(text)
         contentStream.endText()
     }
+
     fun drawTextHeading(
         contentStream: PDPageContentStream,
         text: String,
@@ -606,6 +713,7 @@ class PdfGenerationClass001 {
         drawTextForCenter(contentStream, string, textX, pageHight - 40f, fontSize, color)
 
     }
+
     fun printStringInCenterFooter(
         contentStream: PDPageContentStream,
         string: String,
@@ -726,42 +834,62 @@ class PdfGenerationClass001 {
             )
         }
     }
+
     // Function to convert numbers to words
     fun numberToWords(number: Int): String {
-        if (number == 0) return "zero"
+        if (number == 0) return "Zero"
+        if (number < 0) return "Negative " + numberToWords(-number)
 
         val units = arrayOf(
             "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"
         )
         val teens = arrayOf(
-            "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen",
+            "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen",
             "Sixteen", "Seventeen", "Eighteen", "Nineteen"
         )
         val tens = arrayOf(
             "", "Ten", "Twenty", "Thirty", "Forty", "Fifty",
             "Sixty", "Seventy", "Eighty", "Ninety"
         )
-        val thousands = arrayOf(
-            "", "Thousand", "Lakh", "Crore"
-        )
 
-        fun convertToWords(n: Int): String {
+        fun convertLessThanThousand(n: Int): String {
             if (n == 0) return ""
             if (n < 10) return units[n]
-            if (n < 20) return teens[n - 11]
+            if (n < 20) return teens[n - 10]
             if (n < 100) return tens[n / 10] + if (n % 10 != 0) " " + units[n % 10] else ""
-            if (n < 1000) return units[n / 100] + " hundred" + if (n % 100 != 0) " and " + convertToWords(n % 100) else ""
-
-            for (i in thousands.indices) {
-                val divisor = Math.pow(10.0, (2 * i + 1).toDouble()).toInt()
-                if (n < divisor * 100) {
-                    return convertToWords(n / divisor) + " " + thousands[i] + if (n % divisor != 0) " " + convertToWords(n % divisor) else ""
-                }
-            }
-            return ""
+            return units[n / 100] + " Hundred" + if (n % 100 != 0) " and " + convertLessThanThousand(
+                n % 100
+            ) else ""
         }
 
-        return convertToWords(number).trim()
+        // Indian numbering system: thousand, lakh (100,000), crore (10,000,000)
+        var result = ""
+        var num = number
+
+        // Handle crores (10,000,000+)
+        if (num >= 10000000) {
+            result += convertLessThanThousand(num / 10000000) + " Crore "
+            num %= 10000000
+        }
+
+        // Handle lakhs (100,000 to 9,999,999)
+        if (num >= 100000) {
+            result += convertLessThanThousand(num / 100000) + " Lakh "
+            num %= 100000
+        }
+
+        // Handle thousands (1,000 to 99,999)
+        if (num >= 1000) {
+            result += convertLessThanThousand(num / 1000) + " Hazaar "
+            num %= 1000
+        }
+
+        // Handle remaining hundreds, tens and units
+        if (num > 0) {
+            result += convertLessThanThousand(num)
+        }
+
+        return result.trim()
     }
 
     // Function to convert numbers to Indian numbering format

@@ -5,5 +5,7 @@
         android:id="@+id/Done"
         android:checkable="true"
         android:title="Done"
+        android:icon="@drawable/check_24px"
+        android:iconTint="@color/GreenForDone"
         app:showAsAction="always" />
 </menu>

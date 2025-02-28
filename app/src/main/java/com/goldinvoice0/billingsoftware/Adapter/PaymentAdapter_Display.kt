@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.goldinvoice0.billingsoftware.Model.Payment
+import com.goldinvoice0.billingsoftware.Model.PaymentMethod
 import com.goldinvoice0.billingsoftware.Model.PaymentType
 import com.goldinvoice0.billingsoftware.databinding.PaymentItemLayoutDispalyBinding
 import com.goldinvoice0.billingsoftware.format
@@ -46,13 +47,13 @@ class PaymentAdapter_Display(
 
                 // Set details based on payment type
                 when (payment.type) {
-                    PaymentType.GOLD, PaymentType.SILVER -> {
+                    PaymentMethod.GOLD_EXCHANGE, PaymentMethod.SILVER_EXCHANGE -> {
                         detailsText.visibility = View.VISIBLE
                         detailsText.text = "${payment.weight}g @ ₹${payment.rate}"
                         valueText.text = "₹${payment.value.format(2)}"
                     }
 
-                    PaymentType.CASH -> {
+                    else -> {
                         detailsText.visibility = View.GONE
                         valueText.text = "₹${payment.value.format(2)}"
                     }

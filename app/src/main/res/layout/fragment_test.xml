@@ -1,154 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp"
-    android:background="@android:color/white"
-    android:elevation="2dp">
+    android:padding="16dp">
 
-    <!-- Description -->
-    <TextView
-        android:id="@+id/tvDescription"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Description"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black" />
+        android:layout_marginBottom="8dp"
+        android:hint="Select Item Type"
+        app:boxBackgroundColor="@color/grayLight1"
+        app:endIconMode="dropdown_menu">
 
-    <!-- Row for Weight and Charges -->
-    <LinearLayout
+        <AutoCompleteTextView
+            android:id="@+id/itemTypeDropdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="3"
-        android:paddingVertical="4dp">
+        android:layout_marginBottom="8dp"
+        android:hint="Jewelry Name"
+        app:boxBackgroundColor="@color/grayLight1"
+        app:endIconMode="dropdown_menu">
 
-        <TextView
-            android:id="@+id/tvGrWt"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Gr. Wt: 0.00"
-            android:textSize="14sp" />
+        <AutoCompleteTextView
+            android:id="@+id/jewelryNameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/tvNtWt"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Nt. Wt: 0.00"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/tvMakingCharge"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Making: 0"
-            android:textSize="14sp" />
-    </LinearLayout>
-
-    <!-- Row for Stone Value and Gold Price -->
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="3"
-        android:paddingVertical="4dp">
+        android:layout_marginBottom="8dp"
+        android:hint="Metal Weight (grams)"
+        app:boxBackgroundColor="@color/grayLight1">
 
-        <TextView
-            android:id="@+id/tvStoneValue"
-            android:layout_width="0dp"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/weightInput"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Stone: 0"
-            android:textSize="14sp" />
+            android:inputType="numberDecimal" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/tvGoldPrice"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Gold Price: 0"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/tvTotal"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Total: 0"
-            android:textStyle="bold"
-            android:textSize="14sp" />
-    </LinearLayout>
-
-    <!-- Row for Pcs, Karat, Wastage -->
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="3"
-        android:paddingVertical="4dp">
+        android:layout_marginBottom="8dp"
+        android:hint="Metal Rate (1 gram)"
+        app:boxBackgroundColor="@color/grayLight1">
 
-        <TextView
-            android:id="@+id/tvPcs"
-            android:layout_width="0dp"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/rateInput"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Pcs: 0"
-            android:textSize="14sp" />
+            android:inputType="numberDecimal" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/tvKarat"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Karat: 0"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/tvWastage"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Wastage: 0"
-            android:textSize="14sp" />
-    </LinearLayout>
-
-    <!-- Amount & Received -->
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/sizeInputLayout"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="2"
-        android:paddingVertical="4dp">
+        android:layout_marginBottom="8dp"
+        android:hint="Ring Size"
+        android:visibility="gone"
+        app:boxBackgroundColor="@color/grayLight1">
 
-        <TextView
-            android:id="@+id/tvAmount"
-            android:layout_width="0dp"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/sizeInput"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Amount: 0"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:inputType="numberDecimal" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/tvReceived"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Received: 0"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <!-- Divider -->
-    <View
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_marginTop="8dp" />
+        android:layout_height="wrap_content"
+        android:hint="Notes"
+        app:boxBackgroundColor="@color/grayLight1">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/notesInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:minLines="2" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/saveButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Save Item" />
 
 </LinearLayout>

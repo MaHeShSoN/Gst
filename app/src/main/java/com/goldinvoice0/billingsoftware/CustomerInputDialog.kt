@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.goldinvoice0.billingsoftware.databinding.DialogCustomerInputBinding
 
-class CustomerInputDialog : DialogFragment() {
+class  CustomerInputDialog : DialogFragment() {
     private var _binding: DialogCustomerInputBinding? = null
     private val binding get() = _binding!!
 

@@ -2,7 +2,6 @@ package com.goldinvoice0.billingsoftware
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CancellationSignal
@@ -14,7 +13,6 @@ import android.print.PrintDocumentInfo
 import android.print.PrintManager
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -22,17 +20,9 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import com.flask.colorpicker.ColorPickerView
-import com.flask.colorpicker.builder.ColorPickerDialogBuilder
-import com.goldinvoice0.billingsoftware.Model.PdfData
 import com.goldinvoice0.billingsoftware.Model.Shop
-import com.goldinvoice0.billingsoftware.ViewModel.PdfFinalDataViewModel
 import com.goldinvoice0.billingsoftware.ViewModel.ShopViewModel
 import com.goldinvoice0.billingsoftware.databinding.FragmentViewBillBinding
-import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
-import come.Gst.pdf.PdfGenerationClasses.PdfGeneratorclass2
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -44,13 +34,12 @@ class viewBill : Fragment() {
     private var _binding: FragmentViewBillBinding? = null
     private val binding get() = _binding!!
     lateinit var f: File
-    lateinit var pdfData1: PdfData
+//    lateinit var pdfData1: PdfData
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private val shopViewModel: ShopViewModel by viewModels()
     private lateinit var shop: Shop
     private var list = mutableListOf("")
     private var amount12: Int = 0
-    private val pdfFinalDataViewModel: PdfFinalDataViewModel by viewModels()
     var nextNumber: String = ""
 
     override fun onCreateView(
@@ -60,50 +49,49 @@ class viewBill : Fragment() {
         _binding = FragmentViewBillBinding.inflate(inflater, container, false)
 
         val bundal = arguments
-//        amount12 = bundal!!.getInt("amount")
-        val file = bundal!!.getString("fileName")
+        val file = bundal!!.getString("file")
+        Log.d("file",file.toString())
         f = File(file!!)
-
-        lifecycleScope.launch {
-            sharedViewModel.getReceivedList().observe(viewLifecycleOwner) {
-                pdfData1 = PdfData(
-                    it.name,
-                    it.fileName,
-                    it.phone,
-                    it.address,
-                    it.date,
-                    it.descriptionList,
-                    it.grWtList,
-                    it.ntWtList,
-                    it.makingChargeList,
-                    it.stoneValueList,
-                    it.goldPriceList,
-                    it.totalList,
-                    it.pcsList,
-                    it.karatList,
-                    it.listOfWastage,
-                    it.invoiceNumber
-                )
-                Log.d("Tag","${pdfData1.date}")
-
-                amount12 = it.totalAmount
-                list = it.receivedList
-                nextNumber = it.invoiceNumber
-            }
-            shopViewModel.shop.observe(viewLifecycleOwner) { it ->
-                shop = it
-            }
-        }
-
-        PDFBoxResourceLoader.init(binding.root.context)
         binding.pdfViewMF.fromFile(f).load()
 
-        binding.addButton.setOnClickListener {
-            sharePdfFromPath()
-        }
-        binding.subbtractButton.setOnClickListener {
-            printFile(binding.root.context, f.absolutePath)
-        }
+//        lifecycleScope.launch {
+//            sharedViewModel.getReceivedList().observe(viewLifecycleOwner) {
+//                pdfData1 = PdfData(
+//                    it.name,
+//                    it.fileName,
+//                    it.phone,
+//                    it.address,
+//                    it.date,
+//                    it.descriptionList,
+//                    it.grWtList,
+//                    it.ntWtList,
+//                    it.makingChargeList,
+//                    it.stoneValueList,
+//                    it.goldPriceList,
+//                    it.totalList,
+//                    it.pcsList,
+//                    it.karatList,
+//                    it.listOfWastage,
+//                    it.invoiceNumber
+//                )
+//                Log.d("Tag","${pdfData1.date}")
+//
+//                amount12 = it.totalAmount
+//                list = it.receivedList
+//                nextNumber = it.invoiceNumber
+//            }
+//            shopViewModel.shop.observe(viewLifecycleOwner) { it ->
+//                shop = it
+//            }
+//        }
+//
+//
+//        binding.addButton.setOnClickListener {
+//            sharePdfFromPath()
+//        }
+//        binding.subbtractButton.setOnClickListener {
+//            printFile(binding.root.context, f.absolutePath)
+//        }
 
 
 

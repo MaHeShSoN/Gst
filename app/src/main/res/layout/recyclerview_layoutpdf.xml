@@ -1,103 +1,207 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/cardViewItem"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pdfCardViewLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="16dp"
-    android:layout_marginTop="2dp"
-    android:layout_marginRight="16dp"
-    android:layout_marginBottom="2dp"
-    android:checkable="true"
-    android:clickable="true"
-    android:background="@color/grayLight1"
-    android:backgroundTint="@color/grayLight1"
-    android:fadingEdgeLength="@dimen/cardview_compat_inset_shadow"
-    app:strokeColor="@color/black"
-    app:strokeWidth=".08dp"
-    android:focusable="true"
-    app:cardCornerRadius="8dp">
+    android:layout_marginRight="12dp"
+    android:layout_marginLeft="12dp"
+    android:layout_marginTop="0dp"
+    android:layout_marginBottom="8dp"
+    android:background="@color/white"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="8dp"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
         android:orientation="vertical">
 
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/customerNameLayout"
-            android:layout_width="0dp"
+        <!-- Header with Invoice Info -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-thin"
-            android:maxWidth="100dp"
-            android:text="Mahesh Soni"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/textForDuePym"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
 
+            <!-- Left side: Invoice & Customer -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/textForDuePym"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="serif"
-            android:gravity="end"
-            android:hint="1212"
-            android:paddingStart="1dp"
-            android:paddingEnd="6dp"
-            android:textColor="@color/colorPrimaryVariant"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:theme="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/tvInvoiceNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nototto"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="#JW-2025-001" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:fontFamily="sans-serif-thin"
-            android:hint="Date"
-            android:textColor="@color/grayLight"
-            android:textSize="12sp"
-            android:theme="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/customerNameLayout" />
+                <TextView
+                    android:id="@+id/tvCustomerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="@font/nototto"
+                    android:textSize="14sp"
+                    tools:text="John Doe" />
+            </LinearLayout>
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hapticFeedbackEnabled="true"
-            app:cardCornerRadius="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textForDuePym"
-            app:strokeColor="@android:color/transparent">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/colourPaidDue"
+            <!-- Right side: Payment Status -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipPaymentStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#8BC34A"
-                android:fontFamily="sans-serif-black"
-                android:gravity="end"
-                android:paddingStart="16dp"
-                android:paddingTop="4dp"
-                android:paddingEnd="16dp"
-                android:paddingBottom="4dp"
-                android:text="Paid"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:elevation="0dp"
+                android:fontFamily="@font/nototto"
                 android:textColor="@color/white"
-                android:textSize="12sp" />
-        </com.google.android.material.card.MaterialCardView>
+                android:textSize="11sp"
+                app:chipStrokeWidth="0dp" />
+        </LinearLayout>
+
+        <!-- Amount Summary -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <!-- Total Amount -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.7"
+                    android:text="Total"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvTotalAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nototto"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    tools:text="₹1,25,000" />
+            </LinearLayout>
+
+            <!-- Received Amount -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.7"
+                    android:text="Received"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvReceivedAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nototto"
+                    android:textColor="@color/greenForAdd"
+                    android:textSize="12sp"
+                    tools:text="₹75,000" />
+            </LinearLayout>
+
+            <!-- Due Amount -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.7"
+                    android:text="Due"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvDueAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/redForSub"
+                    android:textSize="12sp"
+                    tools:text="₹50,000" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Footer with Date and Action -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_margin="8dp"
+            android:padding="4dp"
+            >
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <TextView
+                android:id="@+id/dateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:visibility="visible"
+                android:textColor="@color/black"
+                android:fontFamily="@font/nototto"
+                android:gravity="start"
+                android:textSize="12sp"
+                android:text="Bill Date"
+                />
 
+            <TextView
+                android:id="@+id/tvBillingDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/nototto"
+                android:gravity="end"
+                android:textSize="12sp"
+                tools:text="15 Feb 2025" />
+
+        </LinearLayout>
+    </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

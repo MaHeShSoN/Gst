@@ -1,258 +1,288 @@
 package com.goldinvoice0.billingsoftware
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.goldinvoice0.billingsoftware.Adapter.CustomerListAdapter
 import com.goldinvoice0.billingsoftware.Model.Customer
 import com.goldinvoice0.billingsoftware.ViewModel.CustomerViewModel
 import com.goldinvoice0.billingsoftware.databinding.FragmentCustomerListBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.yourpackage.ui.bottomsheet.CustomerBottomSheetFragment
 
 
-class customerList : Fragment(), CustomerInputDialog.OnCustomerInputListener {
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
+import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
+class customerList : Fragment(), CustomerBottomSheetFragment.CustomerDataListener {
     private var _binding: FragmentCustomerListBinding? = null
     private val binding get() = _binding!!
-    private val customerViewModel: CustomerViewModel by viewModels()
-    private lateinit var adapter: CustomerListAdapter  // Class-level adapter
-    private var isFromOrderList: Boolean = false
+    private val viewModel: CustomerViewModel by activityViewModels()
+    private lateinit var customerAdapter: CustomerListAdapter
+
+    // Source fragment identifier and navigation
+    private var sourceFragmentId: String? = null
+    private var customNavigationAction: Int? = null
+    private var selectionMode: Boolean = false
+    private var customerBottomSheet: CustomerBottomSheetFragment? = null
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentCustomerListBinding.inflate(inflater, container, false)
 
-        binding.customerRecyclerView.visibility = View.INVISIBLE
-        binding.placeHolderView.visibility = View.INVISIBLE
+        // Check for navigation parameters only if they exist in arguments
+        arguments?.let { bundle ->
 
-        val bundle = arguments
-        isFromOrderList = bundle!!.getBoolean("FromOrderList")
+            // Extract navigation parameters
+            sourceFragmentId = bundle.getString(ARG_SOURCE_FRAGMENT)
+            customNavigationAction = bundle.getInt(ARG_NAVIGATION_ACTION, -1)
+            if (customNavigationAction == -1) customNavigationAction = null
+            selectionMode = bundle.getBoolean(ARG_SELECTION_MODE, false)
 
-        binding.addCustomer.setOnClickListener {
-            val dialog = CustomerInputDialog()
-            dialog.setOnCustomerInputListener(this)
-            dialog.show(parentFragmentManager, "CustomerInputDialog")
         }
 
-
-        setUpSearchView()
-
-        setupRecyclerView()
-
-        // Check if we have arguments (coming from contact selection)
-        if (arguments?.getString("CustomerName") != null) {
-
-            handleContactData()
-        }
-
-        binding.topAppBar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.action_contect_button -> {
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        binding.contactLoading.visibility = View.VISIBLE
-                        withContext(Dispatchers.Main) {
-                            findNavController().navigate(R.id.action_customerList_to_contactListFragment)
-                        }
-                    }
-                    true
-                }
-
-                else -> false
-            }
-        }
-
-
-        // Toggle placeholder visibility based on data
-
+        setupViews()
         return binding.root
     }
 
+    private fun setupViews() {
+        setupRecyclerView()
+        setupSearchView()
+        setupFab()
+        setupToolbar()
+        observeCustomers()
 
-    // In the customerList class, add this after setupRecyclerView():
-    private fun setupSwipeToDelete() {
-
-        // Add swipe to delete functionality
-        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(
-            0, // Drag directions (0 means no drag)
-            ItemTouchHelper.LEFT // Swipe directions (only right swipe)
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false // We don't want drag & drop
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.bindingAdapterPosition
-                val deletedCustomer = adapter.currentList[position]
-
-                // Show confirmation dialog
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Delete Item")
-                    .setMessage("Are you sure you want to delete this item?")
-                    .setPositiveButton("Yes") { _, _ ->
-                        // Delete the customer
-                        customerViewModel.delete(deletedCustomer)
-
-                        // Show undo snackbar
-                        Snackbar.make(
-                            binding.root,
-                            "Customer deleted",
-                            Snackbar.LENGTH_LONG
-                        ).setAction("UNDO") {
-                            // Restore the customer if undo is clicked
-                            customerViewModel.insert(deletedCustomer)
-                        }.show()
-
-                    }
-                    .setNegativeButton("No") { _, _ ->
-                        // Cancel deletion and restore the item view
-                        adapter!!.notifyItemChanged(position)
-                    }
-                    .show()
-            }
-
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,  // dX will now be negative when swiping left
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                val itemView = viewHolder.itemView
-                val deleteIcon = ContextCompat.getDrawable(
-                    requireContext(),
-                    android.R.drawable.ic_menu_delete
-                )
-                val background = ColorDrawable(Color.RED)
-
-                val iconMargin = (itemView.height - deleteIcon!!.intrinsicHeight) / 2
-                val iconTop = itemView.top + iconMargin
-                val iconBottom = iconTop + deleteIcon.intrinsicHeight
-
-                // Adjust background bounds for left swipe
-                background.setBounds(
-                    itemView.right + dX.toInt(),  // Start from right edge
-                    itemView.top,
-                    itemView.right,  // End at right edge
-                    itemView.bottom
-                )
-                background.draw(c)
-
-                // Draw delete icon for left swipe
-                if (dX < 0) {  // Swiping to the left
-                    val iconRight = itemView.right - iconMargin
-                    val iconLeft = itemView.right - iconMargin - deleteIcon.intrinsicWidth
-                    deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
-                    deleteIcon.draw(c)
-                }
-
-                super.onChildDraw(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
-            }
-        }
-
-        // Attach the touch helper to the RecyclerView
-        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.customerRecyclerView)
     }
 
     private fun setupRecyclerView() {
-        adapter = CustomerListAdapter { customer ->
-            // Handle item click
-            val bundle = Bundle()
-            bundle.putString("name", customer.name)
-            bundle.putString("email", customer.number)
-            bundle.putString("address", customer.address)
-
-            //go tho the next fragment with the customer details
-            if (isFromOrderList) {
-                findNavController().navigate(R.id.action_customerList_to_orderInput, bundle)
-            } else if (!isFromOrderList) {
-                findNavController().navigate(R.id.action_customerList_to_newBill, bundle)
+        customerAdapter = CustomerListAdapter(
+            onItemClick = { customer ->
+                handleCustomerSelection(customer)
+            },
+            onDeleteClick = { customer, position ->
+                handleCustomerDeletion(customer, position)
+            },
+            onEditClick = { customer ->
+                handleCustomerEdit(customer)
             }
+        )
 
-            //Future Idea ->
-            // When Add customer is clicked (app create a new customer with the help of dialog and show in the recyclerview)
-            // When Customer is clicked (app will select the customer and next button is get bold and get enabled)
-        }
-
-        binding.customerRecyclerView.adapter = adapter
 
         binding.customerRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            this.adapter = this@customerList.adapter
+            adapter = customerAdapter
+            setHasFixedSize(true)
         }
 
-        // Add this line
-        setupSwipeToDelete()
 
-        customerViewModel.allCustomers.observe(viewLifecycleOwner) { customers ->
-            customers?.let {
-                adapter.setOriginalList(it)
-            }
-            updateVisibility(customers.isNotEmpty())
-        }
-    }
+        binding.customerRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
 
-    private fun setUpSearchView() {
-        val searchBar = binding.topAppBar.menu.findItem(R.id.action_search).actionView as SearchView
-        searchBar.queryHint = "Search Customers..."  // Updated hint text
-        searchBar.inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
-
-        searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                query?.let { performSearch(it) }
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                newText?.let { performSearch(it) }
-                return true
+                // Scrolling down - hide binding.addCustomer with animation
+                if (dy > 10 && binding.addCustomer.isShown) {
+                    binding.addCustomer.animate()
+                        .translationY(binding.addCustomer.height * 2f)
+                        .setInterpolator(AccelerateInterpolator(2f))
+                        .setDuration(300)
+                        .withEndAction { binding.addCustomer.visibility = View.GONE }
+                        .start()
+                }
+                // Scrolling up - show binding.addCustomer with animation
+                else if (dy < -10 && !binding.addCustomer.isShown) {
+                    binding.addCustomer.visibility = View.VISIBLE
+                    binding.addCustomer.animate()
+                        .translationY(0f)
+                        .setInterpolator(DecelerateInterpolator(2f))
+                        .setDuration(300)
+                        .start()
+                }
             }
         })
 
-        searchBar.setOnCloseListener {
-            searchBar.onActionViewCollapsed()
-            adapter.filter("")  // Reset to show all customers
-            true
+
+    }
+
+    private fun handleCustomerSelection(customer: Customer) {
+        val result = Bundle().apply {
+            putParcelable("selectedCustomer", customer)
+        }
+
+        when {
+            selectionMode -> {
+                Log.d("customerList", "Selection mode")
+                setFragmentResult("customerRequest", result)
+                findNavController().navigateUp()
+            }
+
         }
     }
 
-    private fun performSearch(query: String) {
-        adapter.filter(query)
+    private fun openCustomerBottomSheet(customerToEdit: Customer? = null) {
+        customerBottomSheet = if (customerToEdit != null) {
+            CustomerBottomSheetFragment.newInstance(customerToEdit)
+        } else {
+            CustomerBottomSheetFragment.newInstance()
+        }
+        customerBottomSheet?.setCustomerDataListener(this)
+        customerBottomSheet?.show(childFragmentManager, "CustomerSheet")
+    }
+
+    private fun setupSearchView() {
+        with(binding.topAppBar.menu.findItem(R.id.action_search).actionView as SearchView) {
+            queryHint = "Search Customers..."
+            inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    query?.let { customerAdapter.filter(it) }
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    newText?.let { customerAdapter.filter(it) }
+                    return true
+                }
+            })
+            setOnCloseListener {
+                onActionViewCollapsed()
+                customerAdapter.filter("")
+                true
+            }
+        }
+    }
+
+
+    private fun showDeleteConfirmation(customer: Customer, position: Int) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Customer")
+            .setMessage("Are you sure you want to delete ${customer.name}?")
+            .setPositiveButton("Delete") { _, _ ->
+                deleteCustomer(customer)
+            }
+            .setNegativeButton("Cancel") { _, _ ->
+                customerAdapter.notifyItemChanged(position)
+            }
+            .show()
+    }
+
+    private fun deleteCustomer(customer: Customer) {
+        viewModel.delete(customer)
+        Snackbar.make(binding.root, "Customer deleted", Snackbar.LENGTH_LONG)
+            .setAction("UNDO") { viewModel.insert(customer) }
+            .show()
+    }
+
+    private fun setupFab() {
+        binding.addCustomer.setOnClickListener {
+            showCustomerBottomSheet()
+        }
+    }
+
+    private fun showCustomerBottomSheet() {
+        val bottomSheet = CustomerBottomSheetFragment.newInstance()
+        bottomSheet.setCustomerDataListener(this)
+        bottomSheet.show(childFragmentManager, "CustomerBottomSheet")
+    }
+
+    // Implement the listener to receive customer data
+    override fun onCustomerSaved(
+        firstName: String,
+        lastName: String,
+        phone: String,
+        customerId: String,
+        streetAddress: String,
+        city: String,
+        state: String,
+        imageUri: Uri
+    ) {
+        val customerBeingEdited = customerBottomSheet?.customerToEdit
+
+        if (customerBeingEdited != null) {
+            // We're updating an existing customer
+            val updatedCustomer = Customer(
+                id = customerBeingEdited.id, // Keep the existing ID
+                name = "$firstName $lastName",
+                address = streetAddress,
+                address2 = "$city, $state",
+                number = phone,
+                customerId = customerId,
+                imageUrl = imageUri.toString()
+            )
+            viewModel.update(updatedCustomer)
+            Toast.makeText(requireContext(), "Customer updated successfully", Toast.LENGTH_SHORT).show()
+        } else {
+            // We're creating a new customer
+            val newCustomer = Customer(
+                0, // SQLite will assign a new ID
+                name = "$firstName $lastName",
+                address = streetAddress,
+                address2 = "$city, $state",
+                number = phone,
+                customerId = customerId,
+                imageUrl = imageUri.toString()
+            )
+            viewModel.insert(newCustomer)
+            Toast.makeText(requireContext(), "Customer added successfully", Toast.LENGTH_SHORT).show()
+        }
+        // Don't need to update the UI - viewModel will trigger LiveData updates automatically
+    }
+
+    override fun handleCustomerDeletion(customer: Customer, position: Int) {
+        showDeleteConfirmation(customer, position)
+    }
+
+    // And implement handleCustomerEdit:
+    override fun handleCustomerEdit(customer: Customer) {
+        openCustomerBottomSheet(customer)
+    }
+
+
+    private fun setupToolbar() {
+        binding.topAppBar.apply {
+//            title = if (selectionMode) "Select Customer" else "Customers"
+
+            setNavigationOnClickListener {
+                findNavController().navigateUp()
+            }
+
+            setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.action_contect_button -> {
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }
+    }
+
+
+    private fun observeCustomers() {
+        viewModel.allCustomers.observe(viewLifecycleOwner) { customers ->
+            customers?.let {
+                customerAdapter.setOriginalList(it)
+                updateVisibility(it.isNotEmpty())
+            }
+        }
     }
 
     private fun updateVisibility(hasData: Boolean) {
@@ -261,74 +291,28 @@ class customerList : Fragment(), CustomerInputDialog.OnCustomerInputListener {
     }
 
 
-    override fun onCustomerInput(name: String, contact: String, address: String) {
-        Log.d("CustomerList", "Customer Input Received: $name, $contact, $address")
-        Toast.makeText(
-            requireContext(),
-            "Name: $name, Contact: $contact, Address: $address",
-            Toast.LENGTH_LONG
-        ).show()
-        // Handle the input (e.g., save to database or pass to another fragment)
-        addCustomer(name, contact, address)
-    }
-
-
-    fun addCustomer(name: String, email: String, address: String) {
-        if (name.isBlank()) {
-            Toast.makeText(requireContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (email.isBlank()) {
-            Toast.makeText(requireContext(), "Contact cannot be empty", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (address.isBlank()) {
-            Toast.makeText(requireContext(), "Address cannot be empty", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        customerViewModel.insert(Customer(0, name, address, email))
-        binding.customerRecyclerView.visibility = View.VISIBLE
-        binding.placeHolderView.visibility = View.GONE
-    }
-
-    private fun handleContactData() {
-        // Safely handle arguments, providing null as default
-        arguments?.let { bundle ->
-            val customerName = bundle.getString("CustomerName")
-            val customerNumber = bundle.getString("CustomerNumber")
-
-
-            // Show dialog with pre-filled data
-            showCustomerInputDialog(customerName, customerNumber)
-
-
-            // Clear the arguments after using them to prevent reuse on configuration changes
-            arguments?.clear()
-        }
-    }
-
-    private fun showCustomerInputDialog(customerName: String?, customerNumber: String?) {
-        val dialog = CustomerInputDialog.newInstance(customerName, customerNumber)
-        dialog.setOnCustomerInputListener(object : CustomerInputDialog.OnCustomerInputListener {
-            override fun onCustomerInput(name: String, contact: String, address: String) {
-                Log.d("CustomerList", "Customer Input Received: $name, $contact, $address")
-                Toast.makeText(
-                    requireContext(),
-                    "Name: $name, Contact: $contact, Address: $address",
-                    Toast.LENGTH_LONG
-                ).show()
-                // Handle the input (e.g., save to database or pass to another fragment)
-                addCustomer(name, contact.replace(" ", ""), address)
-
-            }
-        })
-        dialog.show(childFragmentManager, "CustomerInputDialog")
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
+    companion object {
+        private const val ARG_SOURCE_FRAGMENT = "source_fragment"
+        private const val ARG_NAVIGATION_ACTION = "navigation_action"
+        private const val ARG_SELECTION_MODE = "selection_mode"
+
+        fun newInstance(
+            sourceFragmentId: String? = null,
+            customNavigationAction: Int? = null,
+            selectionMode: Boolean = false
+        ): customerList {
+            return customerList().apply {
+                arguments = Bundle().apply {
+                    sourceFragmentId?.let { putString(ARG_SOURCE_FRAGMENT, it) }
+                    customNavigationAction?.let { putInt(ARG_NAVIGATION_ACTION, it) }
+                    putBoolean(ARG_SELECTION_MODE, selectionMode)
+                }
+            }
+        }
+    }
 }

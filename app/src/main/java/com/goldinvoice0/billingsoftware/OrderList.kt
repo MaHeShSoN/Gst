@@ -10,11 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.goldinvoice0.billingsoftware.Adapter.OrderAdapter
 import com.goldinvoice0.billingsoftware.Model.Order
 import com.goldinvoice0.billingsoftware.ViewModel.OrderViewModel
+import com.goldinvoice0.billingsoftware.ViewModel.SharedNavigationViewModel
 import com.goldinvoice0.billingsoftware.databinding.FragmentOrderListBinding
 
 
@@ -26,8 +26,8 @@ class OrderList : Fragment() {
     private lateinit var orderAdapter: OrderAdapter
     private val orderViewModel: OrderViewModel by viewModels()
     private lateinit var orders: List<Order>
-
-    private val shareViewModel:SharedViewModel by activityViewModels()
+    private val vm: SharedNavigationViewModel by activityViewModels()
+    private val shareViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,6 +66,7 @@ class OrderList : Fragment() {
     }
 
     private fun HandleItemClickListner(item: Order) {
+        vm.requestTab(1)
         shareViewModel.setOrder(item)
         val parentNavController = requireActivity().findNavController(R.id.nav_host_fragment)
         parentNavController.navigate(R.id.action_mainScreen_to_orderEdit)
@@ -80,10 +81,9 @@ class OrderList : Fragment() {
     private fun setupClickListeners() {
         binding.addOrder.setOnClickListener {
             // Navigate to add order screen
-            val bundle = Bundle()
-            bundle.putBoolean("FromOrderList", true)
+            vm.requestTab(1)
             val parentNavController = requireActivity().findNavController(R.id.nav_host_fragment)
-            parentNavController.navigate(R.id.action_mainScreen_to_customerList, bundle)
+            parentNavController.navigate(R.id.action_mainScreen_to_orderInput)
 
         }
     }
@@ -92,6 +92,7 @@ class OrderList : Fragment() {
         super.onStart()
         shareViewModel.clearPayments()
         shareViewModel.clearJewelryItem()
+        shareViewModel.clearPaymentsAdvance()
         shareViewModel.jewelleryItemDeleted = false
         shareViewModel.paymentsDeleted = false
     }

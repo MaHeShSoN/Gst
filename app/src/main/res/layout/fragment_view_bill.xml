@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="8dp"
-                app:title="Bill Recipt"
+                app:title="View Bill/Order"
                 app:titleTextAppearance="@style/TextView" />
 
         </com.google.android.material.appbar.AppBarLayout>
@@ -36,7 +36,7 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/subbtractButton"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_gravity="center"
             android:layout_margin="32dp"
@@ -56,49 +56,6 @@
             </com.github.barteksc.pdfviewer.PDFView>
         </androidx.cardview.widget.CardView>
 
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/addButton"
-            android:layout_width="match_parent"
-            android:layout_height="48dip"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:elevation="6dp"
-            android:fontFamily="@font/latobold"
-            android:text="Share"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:tooltipText="Add charges in bill"
-            app:backgroundTint="@color/black"
-            app:icon="@drawable/share_variant_outline"
-            app:iconGravity="textStart"
-            app:iconTint="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlayExtended" />
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/subbtractButton"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:elevation="6dp"
-            android:fontFamily="@font/latobold"
-            android:text="Print"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            app:backgroundTint="@color/colorPrimaryVariant"
-            app:icon="@drawable/print_24px"
-            app:iconGravity="textStart"
-            app:iconTint="@color/white"
-            app:layout_constraintBottom_toTopOf="@+id/addButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlayExtended" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

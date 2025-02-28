@@ -4,48 +4,77 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Toast
+import android.view.animation.AnimationUtils
+import android.view.animation.LayoutAnimationController
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.goldinvoice0.billingsoftware.Adapter.PaymentAdapter
-import com.goldinvoice0.billingsoftware.Model.Payment
-import com.goldinvoice0.billingsoftware.Model.PaymentType
+import androidx.recyclerview.widget.RecyclerView
+import com.goldinvoice0.billingsoftware.Adapter.PaymentListAdapter
+import com.goldinvoice0.billingsoftware.Model.PaymentTransaction
 import com.goldinvoice0.billingsoftware.databinding.FragmentOrderInputContainerBinding
 
 
-class OrderInputContainer : Fragment() {
+// OrderInputContainer.kt
+class OrderInputContainer : Fragment(), AdvancePaymentInputBottomSheetFragment.PaymentAddListener {
     private var _binding: FragmentOrderInputContainerBinding? = null
     private val binding get() = _binding!!
 
-    private var payments = mutableListOf<Payment>()
-    private val paymentAdapter = PaymentAdapter(
-        onDeleteClick = { item, position ->
-            handleDelete(item, position)
-        }
-    )
     private val sharedViewModel: SharedViewModel by activityViewModels()
 
+    // Initialize payments list immediately
+    private var payments: MutableList<PaymentTransaction> = mutableListOf()
+
+    private val paymentAdapter = PaymentListAdapter { paymentTransaction ->
+        HandleDeleteClick(paymentTransaction)
+    }
+
+    private fun HandleDeleteClick(paymentTransaction: PaymentTransaction) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Payment")
+            .setMessage("Are you sure you want to delete this payment?")
+            .setPositiveButton("Delete") { _, _ ->
+                sharedViewModel.removePaymentAdvance(paymentTransaction)
+                payments.remove(paymentTransaction) // Update local list
+                paymentAdapter.removePayment(paymentTransaction)
+                updateTotalAmount() // Use the new method name
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentOrderInputContainerBinding.inflate(inflater, container, false)
 
+        setupInitialState() // New method to setup initial state
+        setupClickListeners() // New method for click listeners
 
-        setupPaymentTypeDropdown()
-        setupRecyclerView()
-        setupAddPaymentButton()
+        return binding.root
+    }
 
+    private fun setupInitialState() {
+        // Initialize with empty state
+        updateTotalAmount()
+        paymentAdapter.submitList(emptyList())
+    }
+
+    private fun setupClickListeners() {
+        binding.addPaymentButton.setOnClickListener {
+            val bottomSheet = AdvancePaymentInputBottomSheetFragment()
+            bottomSheet.setPaymentAddListener(this)
+            bottomSheet.show(parentFragmentManager, "PaymentBottomSheet")
+        }
 
         binding.topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.Done -> {
-
                     findNavController().popBackStack()
                     true
                 }
@@ -53,209 +82,74 @@ class OrderInputContainer : Fragment() {
                 else -> false
             }
         }
-
-        // Inflate the layout for this fragment
-        return binding.root
     }
-
 
     override fun onStart() {
         super.onStart()
         if (arguments?.getBoolean("EditAdvancePayment") == true) {
-            sharedViewModel.payments.removeObservers(viewLifecycleOwner) // Prevent multiple observers
-            sharedViewModel.payments.observe(viewLifecycleOwner) { paymentsList ->
-                payments.clear()
-                payments.addAll(paymentsList) // Avoid referencing the same list
-                paymentAdapter.submitList(payments.toList()) // Ensure a new list is created
-                updateTotal()
-            }
+            observeViewModel()
         }
     }
 
-
-    private fun handleDelete(item: Payment, position: Int) {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Delete Payment")
-            .setMessage("Are you sure you want to delete this payment?")
-            .setPositiveButton("Delete") { _, _ ->
-                val updatedPayments = payments.toMutableList() // Create a new list
-                updatedPayments.removeAt(position)
-                payments = updatedPayments // Update reference
-                paymentAdapter.submitList(payments.toList()) // Ensure adapter gets a fresh list
-                sharedViewModel.removePayment(position)
-                updateTotal()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-
-
-    private fun setupPaymentTypeDropdown() {
-        val paymentTypes = arrayOf("Gold", "Silver", "Payment")
-        val adapter = ArrayAdapter(
-            requireContext(),
-            R.layout.dropdown_item,
-            paymentTypes
-        )
-        binding.paymentTypeDropdown.setAdapter(adapter)
-
-        binding.paymentTypeDropdown.setOnItemClickListener { _, _, position, _ ->
-            showInputCard(paymentTypes[position])
+    private fun observeViewModel() {
+        // Observe payments from ViewModel
+        sharedViewModel.paymentsAdvance.observe(viewLifecycleOwner) { paymentsList ->
+            payments = paymentsList.toMutableList()
+            paymentAdapter.submitList(paymentsList)
+            updateTotalAmount()
         }
     }
 
-    private fun showInputCard(type: String) {
-        // Hide all cards first
-        binding.goldInputCard.visibility = View.GONE
-        binding.silverInputCard.visibility = View.GONE
-        binding.paymentInputCard.visibility = View.GONE
-
-        // Show selected card
-        when (type) {
-            "Gold" -> binding.goldInputCard.visibility = View.VISIBLE
-            "Silver" -> binding.silverInputCard.visibility = View.VISIBLE
-            "Payment" -> binding.paymentInputCard.visibility = View.VISIBLE
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView()
+//        setupScrollListener()
     }
 
     private fun setupRecyclerView() {
         binding.paymentsRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
             adapter = paymentAdapter
-        }
-    }
+            layoutManager = LinearLayoutManager(requireContext())
 
-    private fun setupAddPaymentButton() {
-        binding.addPaymentButton.setOnClickListener {
-            val selectedType = binding.paymentTypeDropdown.text.toString()
-            if (validateInputs(selectedType)) {
-                addPayment(selectedType)
+            layoutAnimation = LayoutAnimationController(
+                AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left)
+            ).apply {
+                delay = 0.15f
+                order = LayoutAnimationController.ORDER_NORMAL
             }
         }
     }
 
-    private fun validateInputs(type: String): Boolean {
-        return when (type) {
-            "Gold" -> validateGoldInputs()
-            "Silver" -> validateSilverInputs()
-            "Payment" -> validatePaymentInputs()
-            else -> false
+
+
+    private fun updateTotalAmount() {
+        try {
+            val totalAmount = payments.sumOf { it.amount }
+            binding.totalAdvanceText.text = "₹${totalAmount.format(2)}"
+        } catch (e: Exception) {
+            binding.totalAdvanceText.text = "₹0.00"
+            e.printStackTrace()
         }
     }
 
-    private fun validateGoldInputs(): Boolean {
-        val weight = binding.goldWeightInput.text.toString()
-        val rate = binding.goldRateInput.text.toString()
-
-        if (weight.isEmpty() || rate.isEmpty()) {
-            showError("Please fill all fields")
-            return false
+    override fun onPaymentAdded(payment: PaymentTransaction) {
+        try {
+            payments.add(payment)
+            sharedViewModel.addPaymentAdvance(payment)
+            paymentAdapter.addPayment(payment)
+            updateTotalAmount()
+        } catch (e: Exception) {
+            // Handle error (maybe show a toast or snackbar)
+            e.printStackTrace()
         }
-
-        return true
-    }
-
-    private fun validateSilverInputs(): Boolean {
-        val weight = binding.silverWeightInput.text.toString()
-        val rate = binding.silverRateInput.text.toString()
-
-        if (weight.isEmpty() || rate.isEmpty()) {
-            showError("Please fill all fields")
-            return false
-        }
-
-        return true
-    }
-
-    private fun validatePaymentInputs(): Boolean {
-        val amount = binding.paymentAmountInput.text.toString()
-
-        if (amount.isEmpty()) {
-            showError("Please enter amount")
-            return false
-        }
-
-        return true
-    }
-
-    private fun addPayment(type: String) {
-        val payment = when (type) {
-            "Gold" -> createGoldPayment()
-            "Silver" -> createSilverPayment()
-            "Payment" -> createCashPayment()
-            else -> null
-        }
-
-        payment?.let {
-            val updatedPayments =
-                payments.toMutableList() // Create new list to avoid reference issue
-            updatedPayments.add(it)
-            payments = updatedPayments // Assign new list
-            paymentAdapter.submitList(payments.toList()) // Adapter gets a new list reference
-            sharedViewModel.addPayment(payment) // Update ViewModel
-            updateTotal()
-            clearInputs()
-        }
-    }
-
-
-    private fun createGoldPayment(): Payment {
-        val weight = binding.goldWeightInput.text.toString().toDouble()
-        val rate = binding.goldRateInput.text.toString().toDouble()
-        return Payment(
-            type = PaymentType.GOLD,
-            weight = weight,
-            rate = rate,
-            value = weight * rate,
-            date = System.currentTimeMillis()
-        )
-    }
-
-    private fun createSilverPayment(): Payment {
-        val weight = binding.silverWeightInput.text.toString().toDouble()
-        val rate = binding.silverRateInput.text.toString().toDouble()
-        return Payment(
-            type = PaymentType.SILVER,
-            weight = weight,
-            rate = rate,
-            value = weight * rate,
-            date = System.currentTimeMillis()
-        )
-    }
-
-    private fun createCashPayment(): Payment {
-        val amount = binding.paymentAmountInput.text.toString().toDouble()
-        return Payment(
-            type = PaymentType.CASH,
-            value = amount,
-            date = System.currentTimeMillis()
-        )
-    }
-
-    private fun updateTotal() {
-        val total = payments.sumOf { it.value }
-        binding.totalAdvanceText.text = "₹${total.format(2)}"
-    }
-
-    private fun clearInputs() {
-        binding.goldWeightInput.text?.clear()
-        binding.goldRateInput.text?.clear()
-        binding.silverWeightInput.text?.clear()
-        binding.silverRateInput.text?.clear()
-        binding.paymentAmountInput.text?.clear()
-        binding.paymentTypeDropdown.text?.clear()
-    }
-
-    private fun showError(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
+        binding.paymentsRecyclerView.clearAnimation()
+        binding.paymentsRecyclerView.removeAllViews()
         _binding = null
+        super.onDestroyView()
     }
-
 }
 
-// Extension function for number formatting
 fun Double.format(digits: Int) = "%.${digits}f".format(this)

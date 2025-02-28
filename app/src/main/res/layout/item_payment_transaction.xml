@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="4dp"
+    app:cardCornerRadius="16dp"
+    app:cardBackgroundColor="@color/white"
+    android:layout_marginHorizontal="16dp"
+    app:cardElevation="0dp"
+    app:strokeWidth=".9dp"
+    app:strokeColor="@color/lightGray"
+    android:clickable="true"
+    android:focusable="true"
+    app:rippleColor="@color/ripple_color"
+    android:stateListAnimator="@animator/card_state_list_anim">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        >
+
+        <!-- Value Text (Similar to Amount) -->
+        <TextView
+            android:id="@+id/valueText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/text_primary"
+            android:text="100000"
+            android:textSize="24sp"
+            android:fontFamily="@font/nototto"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnDelete"/>
+
+        <!-- Payment Type Chip -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/paymentTypeChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            app:chipMinHeight="32dp"
+            android:text="CASH"
+            app:chipBackgroundColor="@color/colorPrimaryVariant"
+            app:chipStrokeWidth="0dp"
+            android:textColor="@color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/valueText"/>
+
+        <!-- Details Text -->
+        <TextView
+            android:id="@+id/detailsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@color/text_secondary"
+            android:paddingHorizontal="8dp"
+            android:text="Cash"
+            android:paddingVertical="4dp"
+            app:layout_constraintStart_toEndOf="@id/paymentTypeChip"
+            app:layout_constraintTop_toTopOf="@id/paymentTypeChip"
+            app:layout_constraintBottom_toBottomOf="@id/paymentTypeChip"
+            android:layout_marginStart="8dp"/>
+
+        <!-- Date Container -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintStart_toStartOf="@id/paymentTypeChip"
+            app:layout_constraintTop_toBottomOf="@id/paymentTypeChip"
+            android:paddingBottom="8dp"
+            android:layout_marginTop="4dp">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/calendar_month_24px"
+                app:tint="@color/text_secondary"/>
+
+            <TextView
+                android:id="@+id/dateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:text="12/feb/2025"
+                android:textColor="@color/text_secondary"
+                android:layout_marginStart="4dp"/>
+        </LinearLayout>
+
+        <!-- Delete Button -->
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/baseline_delete_outline_24"
+            android:padding="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="Delete item"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

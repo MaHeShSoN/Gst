@@ -13,7 +13,7 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/action_contect_button"
-        android:icon="@drawable/import_contacts_24px"
+        android:icon="@drawable/sort_24px"
         android:iconTint="@color/black"
         android:title="Contact"
         app:showAsAction="always" />
